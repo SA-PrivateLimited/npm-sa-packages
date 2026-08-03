@@ -1,0 +1,55 @@
+{
+  "name": "sapvt-ltd-app-packages",
+  "version": "0.2.0",
+  "description": "SA Pvt Ltd reusable React Native UI — Select, MultiSelect, Alert, Phone, theme",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "react-native": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "react-native": "./src/index.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build",
+    "dev": "tsc -p tsconfig.json --watch",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.73"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.79",
+    "react": "18.2.0",
+    "react-native": "0.73.2",
+    "typescript": "~5.4.5"
+  },
+  "keywords": [
+    "react-native",
+    "ui",
+    "multiselect",
+    "banner",
+    "flatlist",
+    "sapvt-ltd"
+  ],
+  "author": "SA Pvt Ltd",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sa-pvt-ltd/home-services.git",
+    "directory": "packages/saPvtLtdAppPackages"
+  }
+}

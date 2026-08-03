@@ -1,0 +1,60 @@
+{
+  "name": "sapvt-ltd-web-packages",
+  "version": "0.3.5",
+  "description": "SA Pvt Ltd React web UI library — Icon (Material Symbols), Select, MultiSelect, TreeMultiSelect, Chip, Widget, Banner, VirtualTable",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && cp src/styles.css dist/styles.css",
+    "prepublishOnly": "npm run build",
+    "dev": "tsc -p tsconfig.json --watch",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "antd": "^5.0.0",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "antd": "^5.27.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "typescript": "~5.8.3"
+  },
+  "keywords": [
+    "react",
+    "ui",
+    "antd",
+    "table",
+    "multiselect",
+    "banner",
+    "sapvt-ltd"
+  ],
+  "author": "SA Pvt Ltd",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sa-pvt-ltd/home-services.git",
+    "directory": "packages/saPvtLtdWebPackages"
+  }
+}
