@@ -3,6 +3,8 @@ export type {BannerProps, BannerVariant} from './Banner';
 
 export {Select} from './Select';
 export type {SelectProps, SelectOption} from './Select';
+/** Alias for clarity alongside MultiSelect */
+export {Select as SingleSelect} from './Select';
 
 export {MultiSelect} from './MultiSelect';
 export type {MultiSelectProps, MultiSelectOption} from './MultiSelect';

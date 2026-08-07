@@ -1,6 +1,13 @@
-import {Checkbox, Select as AntSelect, Space} from 'antd';
-import type {SelectProps as AntSelectProps} from 'antd';
-import type {CSSProperties} from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+} from 'react';
 import {FieldWrap} from './FieldWrap.js';
 import {Icon} from './Icon.js';
 
@@ -23,14 +30,17 @@ export interface MultiSelectProps {
   id?: string;
   allowClear?: boolean;
   showSearch?: boolean;
-  /** `tags` = chip tags in the field; `checkbox` = checklist in the dropdown. */
+  /** `tags` and `checkbox` both use checklist in the panel; selected show as chips. */
   variant?: MultiSelectVariant;
-  maxTagCount?: AntSelectProps['maxTagCount'];
-  size?: AntSelectProps['size'];
+  maxTagCount?: number | 'responsive';
+  size?: 'small' | 'middle' | 'large';
   style?: CSSProperties;
 }
 
-/** Multi-value dropdown (Ant Design under the hood). */
+/**
+ * Custom multi-select dropdown (no Ant Design).
+ * Checklist in panel; selected values as chips on the trigger.
+ */
 export function MultiSelect({
   label,
   options,
@@ -42,54 +52,195 @@ export function MultiSelect({
   id,
   allowClear = true,
   showSearch = true,
-  variant = 'tags',
   maxTagCount = 'responsive',
-  size = 'middle',
   style,
 }: MultiSelectProps) {
-  const selectId = id || 'hs-multiselect';
-  const isCheckbox = variant === 'checkbox';
+  const autoId = useId();
+  const selectId = id || autoId;
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+
+  const labelByValue = useMemo(() => {
+    const map = new Map(options.map((o) => [o.value, o.label]));
+    return map;
+  }, [options]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return options;
+    return options.filter((o) => o.label.toLowerCase().includes(q));
+  }, [options, query]);
+
+  const close = useCallback(() => {
+    setOpen(false);
+    setQuery('');
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) close();
+    };
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open, close]);
+
+  const toggle = (optValue: string) => {
+    if (value.includes(optValue)) {
+      onChange(value.filter((v) => v !== optValue));
+    } else {
+      onChange([...value, optValue]);
+    }
+  };
+
+  const visibleTags = useMemo(() => {
+    if (maxTagCount === 'responsive') return value.slice(0, 2);
+    if (typeof maxTagCount === 'number') return value.slice(0, maxTagCount);
+    return value;
+  }, [value, maxTagCount]);
+
+  const hiddenCount = Math.max(0, value.length - visibleTags.length);
+
+  const onTriggerKey = (e: KeyboardEvent) => {
+    if (disabled) return;
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setOpen(true);
+    }
+  };
 
   return (
     <FieldWrap label={label} htmlFor={selectId} className={className}>
-      <AntSelect
-        id={selectId}
-        mode="multiple"
-        className={`hs-multiselect${isCheckbox ? ' hs-multiselect--checkbox' : ''}`}
-        size={size}
-        style={{width: '100%', ...style}}
-        value={value}
-        placeholder={placeholder}
-        disabled={disabled}
-        allowClear={allowClear}
-        showSearch={showSearch}
-        optionFilterProp="label"
-        maxTagCount={maxTagCount}
-        options={options}
-        suffixIcon={
-          <Icon name="expand_more" className="hs-select__chevron" size={20} />
-        }
-        menuItemSelectedIcon={isCheckbox ? null : undefined}
-        optionRender={
-          isCheckbox
-            ? (oriOption) => {
-                const optValue = String(oriOption.value ?? '');
-                const checked = value.includes(optValue);
-                return (
-                  <Space size={8}>
-                    <Checkbox
-                      checked={checked}
-                      disabled={Boolean(oriOption.data?.disabled)}
-                    />
-                    <span>{oriOption.label}</span>
-                  </Space>
-                );
-              }
-            : undefined
-        }
-        onChange={(next) => onChange(Array.isArray(next) ? next : [])}
-        getPopupContainer={(node) => node.parentElement ?? document.body}
-      />
+      <div
+        ref={rootRef}
+        className={`hs-dd hs-dd--multi${open ? ' is-open' : ''}${disabled ? ' is-disabled' : ''}`}
+        style={style}>
+        <button
+          type="button"
+          id={selectId}
+          className="hs-dd__trigger hs-dd__trigger--multi"
+          disabled={disabled}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => !disabled && setOpen((v) => !v)}
+          onKeyDown={onTriggerKey}>
+          <span className="hs-dd__chips">
+            {value.length === 0 ? (
+              <span className="hs-dd__placeholder">{placeholder}</span>
+            ) : (
+              <>
+                {visibleTags.map((v) => (
+                  <span key={v} className="hs-dd__chip">
+                    {labelByValue.get(v) || v}
+                    <span
+                      className="hs-dd__chip-x"
+                      role="button"
+                      tabIndex={-1}
+                      aria-label={`Remove ${labelByValue.get(v) || v}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onChange(value.filter((x) => x !== v));
+                      }}>
+                      ×
+                    </span>
+                  </span>
+                ))}
+                {hiddenCount > 0 ? (
+                  <span className="hs-dd__chip hs-dd__chip--more">
+                    +{hiddenCount}
+                  </span>
+                ) : null}
+              </>
+            )}
+          </span>
+          <span className="hs-dd__actions">
+            {allowClear && value.length > 0 ? (
+              <span
+                className="hs-dd__clear"
+                role="button"
+                tabIndex={-1}
+                aria-label="Clear"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChange([]);
+                }}>
+                <Icon name="close" size={16} />
+              </span>
+            ) : null}
+            <Icon name="expand_more" className="hs-dd__chevron" size={20} />
+          </span>
+        </button>
+
+        {open ? (
+          <>
+            <div className="hs-dd__backdrop" onClick={close} aria-hidden />
+            <div
+              className="hs-dd__panel"
+              role="listbox"
+              aria-multiselectable
+              aria-labelledby={selectId}>
+              <div className="hs-dd__sheet-handle" aria-hidden />
+              {label || placeholder ? (
+                <p className="hs-dd__panel-title">{label || placeholder}</p>
+              ) : null}
+              {showSearch ? (
+                <div className="hs-dd__search">
+                  <input
+                    className="hs-dd__search-input"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search…"
+                    autoFocus
+                  />
+                </div>
+              ) : null}
+              <ul className="hs-dd__list">
+                {filtered.length === 0 ? (
+                  <li className="hs-dd__empty">No options</li>
+                ) : (
+                  filtered.map((opt) => {
+                    const checked = value.includes(opt.value);
+                    return (
+                      <li key={opt.value}>
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={checked}
+                          disabled={opt.disabled}
+                          className={`hs-dd__option hs-dd__option--check${checked ? ' is-active' : ''}`}
+                          onClick={() => {
+                            if (opt.disabled) return;
+                            toggle(opt.value);
+                          }}>
+                          <span
+                            className={`hs-dd__checkbox${checked ? ' is-checked' : ''}`}
+                            aria-hidden>
+                            {checked ? <Icon name="check" size={14} /> : null}
+                          </span>
+                          <span>{opt.label}</span>
+                        </button>
+                      </li>
+                    );
+                  })
+                )}
+              </ul>
+              <div className="hs-dd__footer">
+                <button type="button" className="hs-dd__done" onClick={close}>
+                  Done
+                </button>
+              </div>
+            </div>
+          </>
+        ) : null}
+      </div>
     </FieldWrap>
   );
 }
