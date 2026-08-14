@@ -28,6 +28,12 @@ export interface SelectProps {
   id?: string;
   allowClear?: boolean;
   showSearch?: boolean;
+  /** Placeholder for the in-dropdown search field when `showSearch` is true. */
+  searchPlaceholder?: string;
+  /** Shown when search/filter yields no options. */
+  emptyMessage?: string;
+  /** Accessible label for the clear control. */
+  clearAriaLabel?: string;
   /** Kept for Ant API compat; ignored by custom dropdown. */
   size?: 'small' | 'middle' | 'large';
   style?: CSSProperties;
@@ -48,6 +54,9 @@ export function Select({
   id,
   allowClear,
   showSearch = false,
+  searchPlaceholder = 'Search…',
+  emptyMessage = 'No options',
+  clearAriaLabel = 'Clear',
   style,
 }: SelectProps) {
   const autoId = useId();
@@ -124,7 +133,7 @@ export function Select({
                 className="hs-dd__clear"
                 role="button"
                 tabIndex={-1}
-                aria-label="Clear"
+                aria-label={clearAriaLabel}
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange('');
@@ -155,14 +164,15 @@ export function Select({
                     className="hs-dd__search-input"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search…"
+                    placeholder={searchPlaceholder}
+                    aria-label={searchPlaceholder}
                     autoFocus
                   />
                 </div>
               ) : null}
               <ul className="hs-dd__list">
                 {filtered.length === 0 ? (
-                  <li className="hs-dd__empty">No options</li>
+                  <li className="hs-dd__empty">{emptyMessage}</li>
                 ) : (
                   filtered.map((opt) => {
                     const active = opt.value === value;

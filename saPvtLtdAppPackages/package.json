@@ -1,7 +1,7 @@
 {
   "name": "sapvt-ltd-app-packages",
-  "version": "0.2.0",
-  "description": "SA Pvt Ltd reusable React Native UI — Select, MultiSelect, Alert, Phone, theme",
+  "version": "0.3.0",
+  "description": "SA Pvt Ltd reusable React Native UI — Button, Input, Modal, Toast, Phone, OTP, theme, and more",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "react-native": "./src/index.ts",

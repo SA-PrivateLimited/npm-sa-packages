@@ -13,7 +13,8 @@ Reusable UI always ships from these **public packages**. Apps must not invent pa
 
 Implementation detail (e.g. Ant Design under web selects) stays **inside the package**. Apps only import from `sapvt-ltd-*-packages` and install declared peer deps (`antd` for web).
 
-Web inventory: see `packages/saPvtLtdWebPackages/COMPONENTS.md` (SingleSelect, MultiSelectCheckbox, TreeMultiSelect, Chip, Widget, …).
+Web inventory: see `packages/saPvtLtdWebPackages/COMPONENTS.md` (Button, Input, Modal, Toast, Table, PermissionSelector, …).
+App inventory: see `packages/saPvtLtdAppPackages/COMPONENTS.md`.
 
 ## 1. Create / login to npm
 

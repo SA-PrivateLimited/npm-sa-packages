@@ -17,21 +17,44 @@ Host apps must load the font (AdminWeb already does in `index.html`):
 
 ```ts
 import { Icon } from 'sapvt-ltd-web-packages';
-<Icon name="expand_more" />  // chevron
-<Icon name="close" />         // dismiss
+<Icon name="expand_more" />
 ```
+
+## Inventory
 
 | Component | Export | Notes |
 |-----------|--------|--------|
 | Icon | `Icon` | Material Symbols ligature wrapper |
 | Banner | `Banner` | Uses `Icon` `close` |
-| Single Select | `Select`, `SingleSelect` | `expand_more` chevron |
-| MultiSelect (tags) | `MultiSelect` | `variant="tags"` |
-| MultiSelect checkbox | `MultiSelectCheckbox` | Checklist + chips inside |
-| Tree MultiSelect | `TreeMultiSelect` | Checkable tree |
-| Chip / Chips | `Chip`, `Chips` | Uses `Icon` `close` |
-| Widget | `Widget` | Card shell |
-| VirtualTable | `VirtualTable` | Sticky headers; column `search` icon; debounced filter; no row checkboxes |
+| Button | `Button` | primary / secondary / ghost / danger |
+| Input | `Input` | label, error, prefix/suffix, multiline |
+| OTP Input | `OtpInput` | digit boxes, paste, onComplete |
+| Phone Input | `PhoneInput` | +91 + 10 digits |
+| Modal | `Modal` | backdrop shell |
+| Dialog | `Dialog` | titled modal + footer |
+| Drawer | `Drawer` | left / right / bottom |
+| Toast | `ToastProvider`, `useToast`, `toast` | imperative + hook |
+| Loader | `Loader` | spinner, optional fullscreen |
+| Skeleton | `Skeleton` | text / title / avatar / rect / card |
+| Pagination | `Pagination` | page / pageSize / total |
+| Table | `Table` / `VirtualTable` | sticky headers, filters |
+| Badge | `Badge` | count or dot |
+| Status Chip | `StatusChip` | semantic status tones |
+| Avatar | `Avatar` | image or initials |
+| Search Bar | `SearchBar` | search + clear |
+| Filter Panel | `FilterPanel` | collapsible apply/reset |
+| Date Picker | `DatePicker` | native `YYYY-MM-DD` |
+| Dropdown | `Dropdown` / `Select` / `SingleSelect` | alias of Select |
+| Permission Selector | `PermissionSelector` | module checkbox groups |
+| Image Upload | `ImageUpload` | data-URL thumbs |
+| Document Viewer | `DocumentViewer` | image / PDF iframe |
+| Empty State | `EmptyState` | icon + CTA |
+| Error State | `ErrorState` | alert + retry |
+| Confirm Dialog | `ConfirmDialog` | danger / warning / info / success |
+| Chip / Chips | `Chip`, `Chips` | tags / filters |
+| MultiSelect | `MultiSelect`, `MultiSelectCheckbox` | tags / checklist |
+| Tree MultiSelect | `TreeMultiSelect` | checkable tree |
+| Widget | `Widget` | card shell |
 
 ## Theme tokens
 
