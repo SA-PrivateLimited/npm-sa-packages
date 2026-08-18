@@ -363,26 +363,47 @@
   cursor: pointer;
 }
 
-/* Mobile: bottom sheet */
+/* Mobile: viewport-level bottom sheet above app chrome */
 @media (max-width: 860px) {
   .hs-dd__backdrop {
     display: block;
     position: fixed;
     inset: 0;
-    z-index: 50;
+    z-index: 4100;
     background: rgba(0, 0, 0, 0.45);
   }
 
+  .hs-dd-overlay {
+    z-index: 4100;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    box-sizing: border-box;
+  }
+
+  .hs-dd-overlay .hs-dd__backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
   .hs-dd__panel {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: relative;
+    left: auto;
+    right: auto;
     top: auto;
-    z-index: 51;
-    max-height: 60dvh;
+    bottom: auto;
+    z-index: 4101;
+    width: 100%;
+    max-height: min(85%, 100%);
     border-radius: 16px 16px 0 0;
     border: none;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .hs-dd-overlay .hs-dd__panel {
+    position: relative;
+    z-index: 1;
   }
 
   .hs-dd__sheet-handle {
@@ -1340,21 +1361,33 @@ textarea.hs-input {
 .hs-drawer-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 4000;
   background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
+  box-sizing: border-box;
 }
 
 .hs-modal {
   width: min(100%, 480px);
-  max-height: min(90dvh, 720px);
-  overflow: auto;
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: var(--hs-surface, #fff);
   border-radius: 16px;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.hs-dialog {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+  flex: 1;
+  width: 100%;
 }
 
 .hs-dialog__header,
@@ -1364,6 +1397,7 @@ textarea.hs-input {
   justify-content: space-between;
   gap: 12px;
   padding: 16px 16px 8px;
+  flex-shrink: 0;
 }
 
 .hs-dialog__title,
@@ -1385,7 +1419,12 @@ textarea.hs-input {
 
 .hs-dialog__body,
 .hs-drawer__body {
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   padding: 8px 16px 16px;
+  flex: 1;
 }
 
 .hs-dialog__footer,
@@ -1393,8 +1432,9 @@ textarea.hs-input {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  padding: 12px 16px 16px;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--hs-border, #e2e8f0);
+  flex-shrink: 0;
 }
 
 .hs-drawer-backdrop {
@@ -1407,6 +1447,7 @@ textarea.hs-input {
   background: var(--hs-surface, #fff);
   display: flex;
   flex-direction: column;
+  min-height: 0;
   max-height: 100%;
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.18);
 }
@@ -1425,7 +1466,7 @@ textarea.hs-input {
 
 .hs-drawer--bottom {
   width: 100%;
-  max-height: 85dvh;
+  max-height: 100%;
   margin-top: auto;
   border-radius: 16px 16px 0 0;
 }
@@ -1436,6 +1477,20 @@ textarea.hs-input {
 
 .hs-drawer-backdrop:has(.hs-drawer--bottom) {
   align-items: flex-end;
+}
+
+@media (max-width: 860px) {
+  .hs-modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .hs-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 16px 16px 0 0;
+  }
 }
 
 .hs-toast-stack {
