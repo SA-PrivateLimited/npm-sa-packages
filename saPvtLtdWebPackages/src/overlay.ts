@@ -2,25 +2,31 @@ import {useEffect, useState, type CSSProperties} from 'react';
 
 const OVERLAY_MQ = '(max-width: 860px)';
 
-let scrollLockCount = 0;
-let previousBodyOverflow = '';
-let previousHtmlOverflow = '';
+// Store lock count on window so HMR module re-execution doesn't reset it
+function getLockCount(): number {
+  return (window as unknown as Record<string, number>)['__hsScrollLockCount'] ?? 0;
+}
+function setLockCount(n: number) {
+  (window as unknown as Record<string, number>)['__hsScrollLockCount'] = n;
+}
 
 /** Nested-safe body scroll lock for viewport overlays. */
 export function lockBodyScroll(): () => void {
   if (typeof document === 'undefined') return () => undefined;
-  if (scrollLockCount === 0) {
-    previousBodyOverflow = document.body.style.overflow;
-    previousHtmlOverflow = document.documentElement.style.overflow;
+  const count = getLockCount();
+  if (count === 0) {
+    document.body.dataset['hsScrollLock'] = '';
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
   }
-  scrollLockCount += 1;
+  setLockCount(count + 1);
   return () => {
-    scrollLockCount = Math.max(0, scrollLockCount - 1);
-    if (scrollLockCount === 0) {
-      document.body.style.overflow = previousBodyOverflow;
-      document.documentElement.style.overflow = previousHtmlOverflow;
+    const next = Math.max(0, getLockCount() - 1);
+    setLockCount(next);
+    if (next === 0) {
+      delete document.body.dataset['hsScrollLock'];
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     }
   };
 }

@@ -34,14 +34,15 @@ export function DropdownOverlay({
 }) {
   if (!open) return null;
 
+  // On desktop render children only — no backdrop needed (dropdown closes on outside click via its own listener)
+  if (!mobile) return <>{children}</>;
+
   const panel = (
     <>
       <div className="hs-dd__backdrop" onClick={onClose} aria-hidden />
       {children}
     </>
   );
-
-  if (!mobile) return panel;
 
   return (
     <OverlayPortal>
