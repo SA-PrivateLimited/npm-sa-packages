@@ -1,5 +1,6 @@
 import type {CSSProperties, ReactNode} from 'react';
 import {Icon} from './Icon.js';
+import {useOverlayScrollLock} from './useMobileSheetOverlay.js';
 
 export type DrawerSide = 'left' | 'right' | 'bottom';
 
@@ -28,6 +29,8 @@ export function Drawer({
   style,
   testId = 'hs-drawer',
 }: DrawerProps) {
+  useOverlayScrollLock(open);
+
   if (!open) return null;
 
   return (

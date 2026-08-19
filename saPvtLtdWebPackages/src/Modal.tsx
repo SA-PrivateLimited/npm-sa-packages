@@ -1,5 +1,6 @@
 import {useEffect, type CSSProperties, type ReactNode} from 'react';
 import {Icon} from './Icon.js';
+import {useOverlayScrollLock} from './useMobileSheetOverlay.js';
 
 export interface ModalProps {
   open: boolean;
@@ -33,14 +34,7 @@ export function Modal({
     return () => window.removeEventListener('keydown', onKey);
   }, [open, closeOnEscape, onClose]);
 
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
+  useOverlayScrollLock(open);
 
   if (!open) return null;
 

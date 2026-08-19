@@ -8,8 +8,10 @@ import {
   type CSSProperties,
   type KeyboardEvent,
 } from 'react';
+import {createPortal} from 'react-dom';
 import {FieldWrap} from './FieldWrap.js';
 import {Icon} from './Icon.js';
+import {useMobileSheet, useOverlayScrollLock} from './useMobileSheetOverlay.js';
 
 export interface MultiSelectOption {
   value: string;
@@ -58,8 +60,12 @@ export function MultiSelect({
   const autoId = useId();
   const selectId = id || autoId;
   const rootRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const isMobileSheet = useMobileSheet();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+
+  useOverlayScrollLock(open && isMobileSheet);
 
   const labelByValue = useMemo(() => {
     const map = new Map(options.map((o) => [o.value, o.label]));
@@ -80,7 +86,10 @@ export function MultiSelect({
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) close();
+      const target = e.target as Node;
+      if (rootRef.current?.contains(target)) return;
+      if (overlayRef.current?.contains(target)) return;
+      close();
     };
     const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key === 'Escape') close();
@@ -92,6 +101,83 @@ export function MultiSelect({
       document.removeEventListener('keydown', onKey);
     };
   }, [open, close]);
+
+  const renderOverlay = () => {
+    if (!open) return null;
+
+    const sheet = (
+      <>
+        <div className="hs-dd__backdrop" onClick={close} aria-hidden />
+        <div
+          className="hs-dd__panel"
+          role="listbox"
+          aria-multiselectable
+          aria-labelledby={selectId}>
+          <div className="hs-dd__sheet-handle" aria-hidden />
+          {label || placeholder ? (
+            <p className="hs-dd__panel-title">{label || placeholder}</p>
+          ) : null}
+          {showSearch ? (
+            <div className="hs-dd__search">
+              <input
+                className="hs-dd__search-input"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search…"
+                autoFocus
+              />
+            </div>
+          ) : null}
+          <ul className="hs-dd__list">
+            {filtered.length === 0 ? (
+              <li className="hs-dd__empty">No options</li>
+            ) : (
+              filtered.map((opt) => {
+                const checked = value.includes(opt.value);
+                return (
+                  <li key={opt.value}>
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={checked}
+                      disabled={opt.disabled}
+                      className={`hs-dd__option hs-dd__option--check${checked ? ' is-active' : ''}`}
+                      onClick={() => {
+                        if (opt.disabled) return;
+                        toggle(opt.value);
+                      }}>
+                      <span
+                        className={`hs-dd__checkbox${checked ? ' is-checked' : ''}`}
+                        aria-hidden>
+                        {checked ? <Icon name="check" size={14} /> : null}
+                      </span>
+                      <span>{opt.label}</span>
+                    </button>
+                  </li>
+                );
+              })
+            )}
+          </ul>
+          <div className="hs-dd__footer">
+            <button type="button" className="hs-dd__done" onClick={close}>
+              Done
+            </button>
+          </div>
+        </div>
+      </>
+    );
+
+    if (isMobileSheet) {
+      return createPortal(
+        <div ref={overlayRef} className="hs-dd__mobile-overlay">
+          {sheet}
+        </div>,
+        document.body,
+      );
+    }
+
+    return <div ref={overlayRef}>{sheet}</div>;
+  };
 
   const toggle = (optValue: string) => {
     if (value.includes(optValue)) {
@@ -179,67 +265,7 @@ export function MultiSelect({
           </span>
         </button>
 
-        {open ? (
-          <>
-            <div className="hs-dd__backdrop" onClick={close} aria-hidden />
-            <div
-              className="hs-dd__panel"
-              role="listbox"
-              aria-multiselectable
-              aria-labelledby={selectId}>
-              <div className="hs-dd__sheet-handle" aria-hidden />
-              {label || placeholder ? (
-                <p className="hs-dd__panel-title">{label || placeholder}</p>
-              ) : null}
-              {showSearch ? (
-                <div className="hs-dd__search">
-                  <input
-                    className="hs-dd__search-input"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search…"
-                    autoFocus
-                  />
-                </div>
-              ) : null}
-              <ul className="hs-dd__list">
-                {filtered.length === 0 ? (
-                  <li className="hs-dd__empty">No options</li>
-                ) : (
-                  filtered.map((opt) => {
-                    const checked = value.includes(opt.value);
-                    return (
-                      <li key={opt.value}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={checked}
-                          disabled={opt.disabled}
-                          className={`hs-dd__option hs-dd__option--check${checked ? ' is-active' : ''}`}
-                          onClick={() => {
-                            if (opt.disabled) return;
-                            toggle(opt.value);
-                          }}>
-                          <span
-                            className={`hs-dd__checkbox${checked ? ' is-checked' : ''}`}
-                            aria-hidden>
-                            {checked ? <Icon name="check" size={14} /> : null}
-                          </span>
-                          <span>{opt.label}</span>
-                        </button>
-                      </li>
-                    );
-                  })
-                )}
-              </ul>
-              <div className="hs-dd__footer">
-                <button type="button" className="hs-dd__done" onClick={close}>
-                  Done
-                </button>
-              </div>
-            </div>
-          </>
-        ) : null}
+        {renderOverlay()}
       </div>
     </FieldWrap>
   );

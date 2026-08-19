@@ -1,7 +1,9 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, } from 'react';
+import { createPortal } from 'react-dom';
 import { FieldWrap } from './FieldWrap.js';
 import { Icon } from './Icon.js';
+import { useMobileSheet, useOverlayScrollLock } from './useMobileSheetOverlay.js';
 /**
  * Custom single-select dropdown (no Ant Design).
  * Mobile: full-width bottom sheet. Desktop: anchored list.
@@ -10,9 +12,12 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
     const autoId = useId();
     const selectId = id || autoId;
     const rootRef = useRef(null);
+    const overlayRef = useRef(null);
+    const isMobileSheet = useMobileSheet();
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
     const canClear = allowClear ?? Boolean(placeholder);
+    useOverlayScrollLock(open && isMobileSheet);
     const selected = useMemo(() => options.find((o) => o.value === value), [options, value]);
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -28,8 +33,12 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
         if (!open)
             return;
         const onDoc = (e) => {
-            if (!rootRef.current?.contains(e.target))
-                close();
+            const target = e.target;
+            if (rootRef.current?.contains(target))
+                return;
+            if (overlayRef.current?.contains(target))
+                return;
+            close();
         };
         const onKey = (e) => {
             if (e.key === 'Escape')
@@ -42,6 +51,23 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
             document.removeEventListener('keydown', onKey);
         };
     }, [open, close]);
+    const renderOverlay = () => {
+        if (!open)
+            return null;
+        const sheet = (_jsxs(_Fragment, { children: [_jsx("div", { className: "hs-dd__backdrop", onClick: close, "aria-hidden": true }), _jsxs("div", { className: "hs-dd__panel", role: "listbox", "aria-labelledby": selectId, children: [_jsx("div", { className: "hs-dd__sheet-handle", "aria-hidden": true }), label || placeholder ? (_jsx("p", { className: "hs-dd__panel-title", children: label || placeholder })) : null, showSearch ? (_jsx("div", { className: "hs-dd__search", children: _jsx("input", { className: "hs-dd__search-input", value: query, onChange: (e) => setQuery(e.target.value), placeholder: searchPlaceholder, "aria-label": searchPlaceholder, autoFocus: true }) })) : null, _jsx("ul", { className: "hs-dd__list", children: filtered.length === 0 ? (_jsx("li", { className: "hs-dd__empty", children: emptyMessage })) : (filtered.map((opt) => {
+                                const active = opt.value === value;
+                                return (_jsx("li", { children: _jsxs("button", { type: "button", role: "option", "aria-selected": active, disabled: opt.disabled, className: `hs-dd__option${active ? ' is-active' : ''}`, onClick: () => {
+                                            if (opt.disabled)
+                                                return;
+                                            onChange(opt.value);
+                                            close();
+                                        }, children: [_jsx("span", { children: opt.label }), active ? (_jsx(Icon, { name: "check", size: 18, className: "hs-dd__check" })) : null] }) }, opt.value));
+                            })) })] })] }));
+        if (isMobileSheet) {
+            return createPortal(_jsx("div", { ref: overlayRef, className: "hs-dd__mobile-overlay", children: sheet }), document.body);
+        }
+        return _jsx("div", { ref: overlayRef, children: sheet });
+    };
     const onTriggerKey = (e) => {
         if (disabled)
             return;
@@ -54,15 +80,7 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
                                         e.stopPropagation();
                                         onChange('');
                                         close();
-                                    }, children: _jsx(Icon, { name: "close", size: 16 }) })) : null, _jsx(Icon, { name: "expand_more", className: "hs-dd__chevron", size: 20 })] })] }), open ? (_jsxs(_Fragment, { children: [_jsx("div", { className: "hs-dd__backdrop", onClick: close, "aria-hidden": true }), _jsxs("div", { className: "hs-dd__panel", role: "listbox", "aria-labelledby": selectId, children: [_jsx("div", { className: "hs-dd__sheet-handle", "aria-hidden": true }), label || placeholder ? (_jsx("p", { className: "hs-dd__panel-title", children: label || placeholder })) : null, showSearch ? (_jsx("div", { className: "hs-dd__search", children: _jsx("input", { className: "hs-dd__search-input", value: query, onChange: (e) => setQuery(e.target.value), placeholder: searchPlaceholder, "aria-label": searchPlaceholder, autoFocus: true }) })) : null, _jsx("ul", { className: "hs-dd__list", children: filtered.length === 0 ? (_jsx("li", { className: "hs-dd__empty", children: emptyMessage })) : (filtered.map((opt) => {
-                                        const active = opt.value === value;
-                                        return (_jsx("li", { children: _jsxs("button", { type: "button", role: "option", "aria-selected": active, disabled: opt.disabled, className: `hs-dd__option${active ? ' is-active' : ''}`, onClick: () => {
-                                                    if (opt.disabled)
-                                                        return;
-                                                    onChange(opt.value);
-                                                    close();
-                                                }, children: [_jsx("span", { children: opt.label }), active ? (_jsx(Icon, { name: "check", size: 18, className: "hs-dd__check" })) : null] }) }, opt.value));
-                                    })) })] })] })) : null] }) }));
+                                    }, children: _jsx(Icon, { name: "close", size: 16 }) })) : null, _jsx(Icon, { name: "expand_more", className: "hs-dd__chevron", size: 20 })] })] }), renderOverlay()] }) }));
 }
 /** Alias â€” prefer this name in new code for clarity. */
 export const SingleSelect = Select;

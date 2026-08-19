@@ -8,8 +8,10 @@ import {
   type CSSProperties,
   type KeyboardEvent,
 } from 'react';
+import {createPortal} from 'react-dom';
 import {FieldWrap} from './FieldWrap.js';
 import {Icon} from './Icon.js';
+import {useMobileSheet, useOverlayScrollLock} from './useMobileSheetOverlay.js';
 
 export interface SelectOption {
   value: string;
@@ -62,9 +64,13 @@ export function Select({
   const autoId = useId();
   const selectId = id || autoId;
   const rootRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const isMobileSheet = useMobileSheet();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const canClear = allowClear ?? Boolean(placeholder);
+
+  useOverlayScrollLock(open && isMobileSheet);
 
   const selected = useMemo(
     () => options.find((o) => o.value === value),
@@ -85,7 +91,10 @@ export function Select({
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) close();
+      const target = e.target as Node;
+      if (rootRef.current?.contains(target)) return;
+      if (overlayRef.current?.contains(target)) return;
+      close();
     };
     const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key === 'Escape') close();
@@ -97,6 +106,74 @@ export function Select({
       document.removeEventListener('keydown', onKey);
     };
   }, [open, close]);
+
+  const renderOverlay = () => {
+    if (!open) return null;
+
+    const sheet = (
+      <>
+        <div className="hs-dd__backdrop" onClick={close} aria-hidden />
+        <div className="hs-dd__panel" role="listbox" aria-labelledby={selectId}>
+          <div className="hs-dd__sheet-handle" aria-hidden />
+          {label || placeholder ? (
+            <p className="hs-dd__panel-title">{label || placeholder}</p>
+          ) : null}
+          {showSearch ? (
+            <div className="hs-dd__search">
+              <input
+                className="hs-dd__search-input"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={searchPlaceholder}
+                aria-label={searchPlaceholder}
+                autoFocus
+              />
+            </div>
+          ) : null}
+          <ul className="hs-dd__list">
+            {filtered.length === 0 ? (
+              <li className="hs-dd__empty">{emptyMessage}</li>
+            ) : (
+              filtered.map((opt) => {
+                const active = opt.value === value;
+                return (
+                  <li key={opt.value}>
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={active}
+                      disabled={opt.disabled}
+                      className={`hs-dd__option${active ? ' is-active' : ''}`}
+                      onClick={() => {
+                        if (opt.disabled) return;
+                        onChange(opt.value);
+                        close();
+                      }}>
+                      <span>{opt.label}</span>
+                      {active ? (
+                        <Icon name="check" size={18} className="hs-dd__check" />
+                      ) : null}
+                    </button>
+                  </li>
+                );
+              })
+            )}
+          </ul>
+        </div>
+      </>
+    );
+
+    if (isMobileSheet) {
+      return createPortal(
+        <div ref={overlayRef} className="hs-dd__mobile-overlay">
+          {sheet}
+        </div>,
+        document.body,
+      );
+    }
+
+    return <div ref={overlayRef}>{sheet}</div>;
+  };
 
   const onTriggerKey = (e: KeyboardEvent) => {
     if (disabled) return;
@@ -150,58 +227,7 @@ export function Select({
           </span>
         </button>
 
-        {open ? (
-          <>
-            <div className="hs-dd__backdrop" onClick={close} aria-hidden />
-            <div className="hs-dd__panel" role="listbox" aria-labelledby={selectId}>
-              <div className="hs-dd__sheet-handle" aria-hidden />
-              {label || placeholder ? (
-                <p className="hs-dd__panel-title">{label || placeholder}</p>
-              ) : null}
-              {showSearch ? (
-                <div className="hs-dd__search">
-                  <input
-                    className="hs-dd__search-input"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={searchPlaceholder}
-                    aria-label={searchPlaceholder}
-                    autoFocus
-                  />
-                </div>
-              ) : null}
-              <ul className="hs-dd__list">
-                {filtered.length === 0 ? (
-                  <li className="hs-dd__empty">{emptyMessage}</li>
-                ) : (
-                  filtered.map((opt) => {
-                    const active = opt.value === value;
-                    return (
-                      <li key={opt.value}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={active}
-                          disabled={opt.disabled}
-                          className={`hs-dd__option${active ? ' is-active' : ''}`}
-                          onClick={() => {
-                            if (opt.disabled) return;
-                            onChange(opt.value);
-                            close();
-                          }}>
-                          <span>{opt.label}</span>
-                          {active ? (
-                            <Icon name="check" size={18} className="hs-dd__check" />
-                          ) : null}
-                        </button>
-                      </li>
-                    );
-                  })
-                )}
-              </ul>
-            </div>
-          </>
-        ) : null}
+        {renderOverlay()}
       </div>
     </FieldWrap>
   );

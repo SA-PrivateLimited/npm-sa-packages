@@ -1,5 +1,12 @@
 /* sapvt-ltd-web-packages — base styles (import via `sapvt-ltd-web-packages/styles.css`) */
 
+html.hs-overlay-open,
+html.hs-overlay-open body {
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
 .hs-banner {
   display: flex;
   align-items: flex-start;
@@ -365,24 +372,61 @@
 
 /* Mobile: bottom sheet */
 @media (max-width: 860px) {
-  .hs-dd__backdrop {
-    display: block;
+  /*
+   * Portaled overlay root — one fixed viewport box so backdrop + sheet
+   * stay aligned when the iOS keyboard opens (Chrome on iPhone).
+   */
+  .hs-dd__mobile-overlay {
     position: fixed;
     inset: 0;
-    z-index: 50;
+    /* Above modal/drawer (1000) so selects opened inside sheets stay on top */
+    z-index: 1100;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  .hs-dd__mobile-overlay .hs-dd__backdrop,
+  .hs-dd__mobile-overlay .hs-dd__panel {
+    pointer-events: auto;
+  }
+
+  .hs-dd__backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
     background: rgba(0, 0, 0, 0.45);
   }
 
   .hs-dd__panel {
-    position: fixed;
+    position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
     top: auto;
-    z-index: 51;
-    max-height: 60dvh;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    /* Keep mobile select sheet height stable while typing/searching. */
+    height: 420px !important;
+    max-height: min(420px, calc(100svh - 16px)) !important;
+    min-height: 320px !important;
     border-radius: 16px 16px 0 0;
     border: none;
+  }
+
+  .hs-dd__search-input {
+    /* iOS auto-zooms inputs below 16px, which shifts the layout horizontally. */
+    font-size: 16px;
+  }
+
+  .hs-dd__list {
+    /* Prevent list viewport from collapsing when result count is low. */
+    min-height: 180px;
   }
 
   .hs-dd__sheet-handle {
@@ -1474,7 +1518,7 @@ textarea.hs-input {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: min(100vw - 32px, 360px);
+  max-width: min(calc(100% - 32px), 360px);
 }
 
 .hs-toast {
