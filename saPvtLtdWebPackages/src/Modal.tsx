@@ -1,11 +1,5 @@
 import {useEffect, type CSSProperties, type ReactNode} from 'react';
 import {Icon} from './Icon.js';
-import {OverlayPortal} from './OverlayPortal.js';
-import {
-  lockBodyScroll,
-  useVisualViewportBox,
-  viewportBoxStyle,
-} from './overlay.js';
 
 export interface ModalProps {
   open: boolean;
@@ -30,8 +24,6 @@ export function Modal({
   style,
   testId = 'hs-modal',
 }: ModalProps) {
-  const box = useVisualViewportBox(open);
-
   useEffect(() => {
     if (!open || !closeOnEscape) return;
     const onKey = (e: KeyboardEvent) => {
@@ -43,31 +35,32 @@ export function Modal({
 
   useEffect(() => {
     if (!open) return;
-    return lockBodyScroll();
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, [open]);
 
   if (!open) return null;
 
   return (
-    <OverlayPortal>
+    <div
+      className="hs-modal-backdrop"
+      role="presentation"
+      data-testid={testId}
+      onClick={() => {
+        if (closeOnBackdrop) onClose();
+      }}>
       <div
-        className="hs-modal-backdrop"
-        role="presentation"
-        data-testid={testId}
-        style={viewportBoxStyle(box)}
-        onClick={() => {
-          if (closeOnBackdrop) onClose();
-        }}>
-        <div
-          className={`hs-modal ${className}`.trim()}
-          style={style}
-          role="dialog"
-          aria-modal="true"
-          onClick={(e) => e.stopPropagation()}>
-          {children}
-        </div>
+        className={`hs-modal ${className}`.trim()}
+        style={style}
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}>
+        {children}
       </div>
-    </OverlayPortal>
+    </div>
   );
 }
 

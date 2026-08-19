@@ -8,7 +8,6 @@ import {
   type CSSProperties,
   type KeyboardEvent,
 } from 'react';
-import {DropdownOverlay, useDropdownOverlay} from './DropdownOverlay.js';
 import {FieldWrap} from './FieldWrap.js';
 import {Icon} from './Icon.js';
 
@@ -16,8 +15,6 @@ export interface SelectOption {
   value: string;
   label: string;
   disabled?: boolean;
-  /** Extra haystack for dropdown search (aliases, other languages). */
-  searchText?: string;
 }
 
 export interface SelectProps {
@@ -68,7 +65,6 @@ export function Select({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const canClear = allowClear ?? Boolean(placeholder);
-  const {mobile, box} = useDropdownOverlay(open);
 
   const selected = useMemo(
     () => options.find((o) => o.value === value),
@@ -78,10 +74,7 @@ export function Select({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return options;
-    return options.filter((o) => {
-      const hay = `${o.label} ${o.searchText || ''}`.toLowerCase();
-      return hay.includes(q);
-    });
+    return options.filter((o) => o.label.toLowerCase().includes(q));
   }, [options, query]);
 
   const close = useCallback(() => {
@@ -91,22 +84,19 @@ export function Select({
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: globalThis.KeyboardEvent) => {
-      if (e.key === 'Escape') close();
-    };
-    document.addEventListener('keydown', onKey);
-    if (mobile) {
-      return () => document.removeEventListener('keydown', onKey);
-    }
     const onDoc = (e: MouseEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) close();
     };
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
     document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
     return () => {
       document.removeEventListener('mousedown', onDoc);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, close, mobile]);
+  }, [open, close]);
 
   const onTriggerKey = (e: KeyboardEvent) => {
     if (disabled) return;
@@ -160,55 +150,58 @@ export function Select({
           </span>
         </button>
 
-        <DropdownOverlay open={open} mobile={mobile} box={box} onClose={close}>
-          <div className="hs-dd__panel" role="listbox" aria-labelledby={selectId}>
-            <div className="hs-dd__sheet-handle" aria-hidden />
-            {label || placeholder ? (
-              <p className="hs-dd__panel-title">{label || placeholder}</p>
-            ) : null}
-            {showSearch ? (
-              <div className="hs-dd__search">
-                <input
-                  className="hs-dd__search-input"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={searchPlaceholder}
-                  aria-label={searchPlaceholder}
-                  autoFocus
-                />
-              </div>
-            ) : null}
-            <ul className="hs-dd__list">
-              {filtered.length === 0 ? (
-                <li className="hs-dd__empty">{emptyMessage}</li>
-              ) : (
-                filtered.map((opt) => {
-                  const active = opt.value === value;
-                  return (
-                    <li key={opt.value}>
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={active}
-                        disabled={opt.disabled}
-                        className={`hs-dd__option${active ? ' is-active' : ''}`}
-                        onClick={() => {
-                          if (opt.disabled) return;
-                          onChange(opt.value);
-                          close();
-                        }}>
-                        <span>{opt.label}</span>
-                        {active ? (
-                          <Icon name="check" size={18} className="hs-dd__check" />
-                        ) : null}
-                      </button>
-                    </li>
-                  );
-                })
-              )}
-            </ul>
-          </div>
-        </DropdownOverlay>
+        {open ? (
+          <>
+            <div className="hs-dd__backdrop" onClick={close} aria-hidden />
+            <div className="hs-dd__panel" role="listbox" aria-labelledby={selectId}>
+              <div className="hs-dd__sheet-handle" aria-hidden />
+              {label || placeholder ? (
+                <p className="hs-dd__panel-title">{label || placeholder}</p>
+              ) : null}
+              {showSearch ? (
+                <div className="hs-dd__search">
+                  <input
+                    className="hs-dd__search-input"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={searchPlaceholder}
+                    aria-label={searchPlaceholder}
+                    autoFocus
+                  />
+                </div>
+              ) : null}
+              <ul className="hs-dd__list">
+                {filtered.length === 0 ? (
+                  <li className="hs-dd__empty">{emptyMessage}</li>
+                ) : (
+                  filtered.map((opt) => {
+                    const active = opt.value === value;
+                    return (
+                      <li key={opt.value}>
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={active}
+                          disabled={opt.disabled}
+                          className={`hs-dd__option${active ? ' is-active' : ''}`}
+                          onClick={() => {
+                            if (opt.disabled) return;
+                            onChange(opt.value);
+                            close();
+                          }}>
+                          <span>{opt.label}</span>
+                          {active ? (
+                            <Icon name="check" size={18} className="hs-dd__check" />
+                          ) : null}
+                        </button>
+                      </li>
+                    );
+                  })
+                )}
+              </ul>
+            </div>
+          </>
+        ) : null}
       </div>
     </FieldWrap>
   );

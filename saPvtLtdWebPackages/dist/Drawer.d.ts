@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 export type DrawerSide = 'left' | 'right' | 'bottom';
 export interface DrawerProps {
     open: boolean;

@@ -8,7 +8,6 @@ import {
   type CSSProperties,
   type KeyboardEvent,
 } from 'react';
-import {DropdownOverlay, useDropdownOverlay} from './DropdownOverlay.js';
 import {FieldWrap} from './FieldWrap.js';
 import {Icon} from './Icon.js';
 
@@ -61,7 +60,6 @@ export function MultiSelect({
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const {mobile, box} = useDropdownOverlay(open);
 
   const labelByValue = useMemo(() => {
     const map = new Map(options.map((o) => [o.value, o.label]));
@@ -81,22 +79,19 @@ export function MultiSelect({
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: globalThis.KeyboardEvent) => {
-      if (e.key === 'Escape') close();
-    };
-    document.addEventListener('keydown', onKey);
-    if (mobile) {
-      return () => document.removeEventListener('keydown', onKey);
-    }
     const onDoc = (e: MouseEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) close();
     };
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
     document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
     return () => {
       document.removeEventListener('mousedown', onDoc);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, close, mobile]);
+  }, [open, close]);
 
   const toggle = (optValue: string) => {
     if (value.includes(optValue)) {
@@ -184,64 +179,67 @@ export function MultiSelect({
           </span>
         </button>
 
-        <DropdownOverlay open={open} mobile={mobile} box={box} onClose={close}>
-          <div
-            className="hs-dd__panel"
-            role="listbox"
-            aria-multiselectable
-            aria-labelledby={selectId}>
-            <div className="hs-dd__sheet-handle" aria-hidden />
-            {label || placeholder ? (
-              <p className="hs-dd__panel-title">{label || placeholder}</p>
-            ) : null}
-            {showSearch ? (
-              <div className="hs-dd__search">
-                <input
-                  className="hs-dd__search-input"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search…"
-                  autoFocus
-                />
+        {open ? (
+          <>
+            <div className="hs-dd__backdrop" onClick={close} aria-hidden />
+            <div
+              className="hs-dd__panel"
+              role="listbox"
+              aria-multiselectable
+              aria-labelledby={selectId}>
+              <div className="hs-dd__sheet-handle" aria-hidden />
+              {label || placeholder ? (
+                <p className="hs-dd__panel-title">{label || placeholder}</p>
+              ) : null}
+              {showSearch ? (
+                <div className="hs-dd__search">
+                  <input
+                    className="hs-dd__search-input"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search…"
+                    autoFocus
+                  />
+                </div>
+              ) : null}
+              <ul className="hs-dd__list">
+                {filtered.length === 0 ? (
+                  <li className="hs-dd__empty">No options</li>
+                ) : (
+                  filtered.map((opt) => {
+                    const checked = value.includes(opt.value);
+                    return (
+                      <li key={opt.value}>
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={checked}
+                          disabled={opt.disabled}
+                          className={`hs-dd__option hs-dd__option--check${checked ? ' is-active' : ''}`}
+                          onClick={() => {
+                            if (opt.disabled) return;
+                            toggle(opt.value);
+                          }}>
+                          <span
+                            className={`hs-dd__checkbox${checked ? ' is-checked' : ''}`}
+                            aria-hidden>
+                            {checked ? <Icon name="check" size={14} /> : null}
+                          </span>
+                          <span>{opt.label}</span>
+                        </button>
+                      </li>
+                    );
+                  })
+                )}
+              </ul>
+              <div className="hs-dd__footer">
+                <button type="button" className="hs-dd__done" onClick={close}>
+                  Done
+                </button>
               </div>
-            ) : null}
-            <ul className="hs-dd__list">
-              {filtered.length === 0 ? (
-                <li className="hs-dd__empty">No options</li>
-              ) : (
-                filtered.map((opt) => {
-                  const checked = value.includes(opt.value);
-                  return (
-                    <li key={opt.value}>
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={checked}
-                        disabled={opt.disabled}
-                        className={`hs-dd__option hs-dd__option--check${checked ? ' is-active' : ''}`}
-                        onClick={() => {
-                          if (opt.disabled) return;
-                          toggle(opt.value);
-                        }}>
-                        <span
-                          className={`hs-dd__checkbox${checked ? ' is-checked' : ''}`}
-                          aria-hidden>
-                          {checked ? <Icon name="check" size={14} /> : null}
-                        </span>
-                        <span>{opt.label}</span>
-                      </button>
-                    </li>
-                  );
-                })
-              )}
-            </ul>
-            <div className="hs-dd__footer">
-              <button type="button" className="hs-dd__done" onClick={close}>
-                Done
-              </button>
             </div>
-          </div>
-        </DropdownOverlay>
+          </>
+        ) : null}
       </div>
     </FieldWrap>
   );

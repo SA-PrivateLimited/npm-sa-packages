@@ -1,6 +1,5 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, } from 'react';
-import { DropdownOverlay, useDropdownOverlay } from './DropdownOverlay.js';
 import { FieldWrap } from './FieldWrap.js';
 import { Icon } from './Icon.js';
 /**
@@ -14,16 +13,12 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
     const canClear = allowClear ?? Boolean(placeholder);
-    const { mobile, box } = useDropdownOverlay(open);
     const selected = useMemo(() => options.find((o) => o.value === value), [options, value]);
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
         if (!q)
             return options;
-        return options.filter((o) => {
-            const hay = `${o.label} ${o.searchText || ''}`.toLowerCase();
-            return hay.includes(q);
-        });
+        return options.filter((o) => o.label.toLowerCase().includes(q));
     }, [options, query]);
     const close = useCallback(() => {
         setOpen(false);
@@ -32,24 +27,21 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
     useEffect(() => {
         if (!open)
             return;
-        const onKey = (e) => {
-            if (e.key === 'Escape')
-                close();
-        };
-        document.addEventListener('keydown', onKey);
-        if (mobile) {
-            return () => document.removeEventListener('keydown', onKey);
-        }
         const onDoc = (e) => {
             if (!rootRef.current?.contains(e.target))
                 close();
         };
+        const onKey = (e) => {
+            if (e.key === 'Escape')
+                close();
+        };
         document.addEventListener('mousedown', onDoc);
+        document.addEventListener('keydown', onKey);
         return () => {
             document.removeEventListener('mousedown', onDoc);
             document.removeEventListener('keydown', onKey);
         };
-    }, [open, close, mobile]);
+    }, [open, close]);
     const onTriggerKey = (e) => {
         if (disabled)
             return;
@@ -62,15 +54,15 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
                                         e.stopPropagation();
                                         onChange('');
                                         close();
-                                    }, children: _jsx(Icon, { name: "close", size: 16 }) })) : null, _jsx(Icon, { name: "expand_more", className: "hs-dd__chevron", size: 20 })] })] }), _jsx(DropdownOverlay, { open: open, mobile: mobile, box: box, onClose: close, children: _jsxs("div", { className: "hs-dd__panel", role: "listbox", "aria-labelledby": selectId, children: [_jsx("div", { className: "hs-dd__sheet-handle", "aria-hidden": true }), label || placeholder ? (_jsx("p", { className: "hs-dd__panel-title", children: label || placeholder })) : null, showSearch ? (_jsx("div", { className: "hs-dd__search", children: _jsx("input", { className: "hs-dd__search-input", value: query, onChange: (e) => setQuery(e.target.value), placeholder: searchPlaceholder, "aria-label": searchPlaceholder, autoFocus: true }) })) : null, _jsx("ul", { className: "hs-dd__list", children: filtered.length === 0 ? (_jsx("li", { className: "hs-dd__empty", children: emptyMessage })) : (filtered.map((opt) => {
-                                    const active = opt.value === value;
-                                    return (_jsx("li", { children: _jsxs("button", { type: "button", role: "option", "aria-selected": active, disabled: opt.disabled, className: `hs-dd__option${active ? ' is-active' : ''}`, onClick: () => {
-                                                if (opt.disabled)
-                                                    return;
-                                                onChange(opt.value);
-                                                close();
-                                            }, children: [_jsx("span", { children: opt.label }), active ? (_jsx(Icon, { name: "check", size: 18, className: "hs-dd__check" })) : null] }) }, opt.value));
-                                })) })] }) })] }) }));
+                                    }, children: _jsx(Icon, { name: "close", size: 16 }) })) : null, _jsx(Icon, { name: "expand_more", className: "hs-dd__chevron", size: 20 })] })] }), open ? (_jsxs(_Fragment, { children: [_jsx("div", { className: "hs-dd__backdrop", onClick: close, "aria-hidden": true }), _jsxs("div", { className: "hs-dd__panel", role: "listbox", "aria-labelledby": selectId, children: [_jsx("div", { className: "hs-dd__sheet-handle", "aria-hidden": true }), label || placeholder ? (_jsx("p", { className: "hs-dd__panel-title", children: label || placeholder })) : null, showSearch ? (_jsx("div", { className: "hs-dd__search", children: _jsx("input", { className: "hs-dd__search-input", value: query, onChange: (e) => setQuery(e.target.value), placeholder: searchPlaceholder, "aria-label": searchPlaceholder, autoFocus: true }) })) : null, _jsx("ul", { className: "hs-dd__list", children: filtered.length === 0 ? (_jsx("li", { className: "hs-dd__empty", children: emptyMessage })) : (filtered.map((opt) => {
+                                        const active = opt.value === value;
+                                        return (_jsx("li", { children: _jsxs("button", { type: "button", role: "option", "aria-selected": active, disabled: opt.disabled, className: `hs-dd__option${active ? ' is-active' : ''}`, onClick: () => {
+                                                    if (opt.disabled)
+                                                        return;
+                                                    onChange(opt.value);
+                                                    close();
+                                                }, children: [_jsx("span", { children: opt.label }), active ? (_jsx(Icon, { name: "check", size: 18, className: "hs-dd__check" })) : null] }) }, opt.value));
+                                    })) })] })] })) : null] }) }));
 }
 /** Alias â€” prefer this name in new code for clarity. */
 export const SingleSelect = Select;

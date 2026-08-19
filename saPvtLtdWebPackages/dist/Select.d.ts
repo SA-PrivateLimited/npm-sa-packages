@@ -3,8 +3,6 @@ export interface SelectOption {
     value: string;
     label: string;
     disabled?: boolean;
-    /** Extra haystack for dropdown search (aliases, other languages). */
-    searchText?: string;
 }
 export interface SelectProps {
     label?: string;
