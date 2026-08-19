@@ -1,0 +1,5 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { INDIA_DIAL_CODE, localTenDigits } from './phone.js';
+export function PhoneInput({ value, onChange, placeholder = '10-digit mobile', disabled = false, autoFocus = false, dialCode = INDIA_DIAL_CODE, label, error, className = '', style, testId = 'hs-phone', }) {
+    return (_jsxs("div", { className: `hs-phone ${error ? 'hs-phone--error' : ''} ${className}`.trim(), style: style, "data-testid": testId, children: [label ? _jsx("label", { className: "hs-field-label", children: label }) : null, _jsxs("div", { className: "hs-phone__row", children: [_jsx("span", { className: "hs-phone__prefix", "aria-hidden": true, children: dialCode }), _jsx("input", { className: "hs-phone__input", value: localTenDigits(value).slice(0, 10), onChange: (e) => onChange(localTenDigits(e.target.value).slice(0, 10)), placeholder: placeholder, inputMode: "numeric", autoComplete: "tel", maxLength: 10, disabled: disabled, autoFocus: autoFocus, "aria-label": "10-digit mobile number", "aria-invalid": Boolean(error) || undefined })] }), error ? _jsx("p", { className: "hs-field-error", children: error }) : null] }));
+}
