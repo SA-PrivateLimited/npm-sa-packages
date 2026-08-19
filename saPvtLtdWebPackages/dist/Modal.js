@@ -1,6 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect } from 'react';
 import { Icon } from './Icon.js';
+import { useOverlayScrollLock } from './useMobileSheetOverlay.js';
 export function Modal({ open, onClose, children, closeOnBackdrop = true, closeOnEscape = true, className = '', style, testId = 'hs-modal', }) {
     useEffect(() => {
         if (!open || !closeOnEscape)
@@ -12,15 +13,7 @@ export function Modal({ open, onClose, children, closeOnBackdrop = true, closeOn
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, [open, closeOnEscape, onClose]);
-    useEffect(() => {
-        if (!open)
-            return;
-        const prev = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = prev;
-        };
-    }, [open]);
+    useOverlayScrollLock(open);
     if (!open)
         return null;
     return (_jsx("div", { className: "hs-modal-backdrop", role: "presentation", "data-testid": testId, onClick: () => {
