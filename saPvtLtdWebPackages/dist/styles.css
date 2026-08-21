@@ -1417,6 +1417,15 @@ textarea.hs-input {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
 }
 
+.hs-dialog {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
 .hs-dialog__header,
 .hs-drawer__header {
   display: flex;
