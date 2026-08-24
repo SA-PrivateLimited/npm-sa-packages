@@ -17,6 +17,8 @@ export interface SelectOption {
   value: string;
   label: string;
   disabled?: boolean;
+  /** Extra text included when filtering with `showSearch` (e.g. Hindi search terms). */
+  searchText?: string;
 }
 
 export interface SelectProps {
@@ -80,7 +82,10 @@ export function Select({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return options;
-    return options.filter((o) => o.label.toLowerCase().includes(q));
+    return options.filter((o) => {
+      const haystack = `${o.label} ${o.searchText || ''}`.toLowerCase();
+      return haystack.includes(q);
+    });
   }, [options, query]);
 
   const close = useCallback(() => {

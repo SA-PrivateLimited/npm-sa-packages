@@ -29,7 +29,7 @@ export interface ImageViewerProps {
 }
 
 /**
- * Full-screen image lightbox — presentation only.
+ * Centered image modal card — presentation only.
  * Pass image URLs via props; no S3/upload/API logic.
  */
 export function ImageViewer({
