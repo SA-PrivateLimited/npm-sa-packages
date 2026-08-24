@@ -100,6 +100,9 @@ export type {ImageUploadProps} from './ImageUpload.js';
 export {DocumentViewer} from './DocumentViewer.js';
 export type {DocumentViewerProps} from './DocumentViewer.js';
 
+export {ImageViewer} from './ImageViewer.js';
+export type {ImageViewerProps} from './ImageViewer.js';
+
 export {EmptyState, ErrorState} from './EmptyState.js';
 export type {EmptyStateProps, ErrorStateProps} from './EmptyState.js';
 
