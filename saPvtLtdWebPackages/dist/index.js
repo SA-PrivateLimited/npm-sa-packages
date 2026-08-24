@@ -30,6 +30,7 @@ export { FilterPanel } from './FilterPanel.js';
 export { PermissionSelector } from './PermissionSelector.js';
 export { ImageUpload } from './ImageUpload.js';
 export { DocumentViewer } from './DocumentViewer.js';
+export { ImageViewer } from './ImageViewer.js';
 export { EmptyState, ErrorState } from './EmptyState.js';
 export { Card } from './Card.js';
 export { digitsOnly, localTenDigits, toE164, formatPhoneDisplay, INDIA_DIAL_CODE, } from './phone.js';
