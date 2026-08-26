@@ -23,7 +23,10 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
         const q = query.trim().toLowerCase();
         if (!q)
             return options;
-        return options.filter((o) => o.label.toLowerCase().includes(q));
+        return options.filter((o) => {
+            const haystack = `${o.label} ${o.searchText || ''}`.toLowerCase();
+            return haystack.includes(q);
+        });
     }, [options, query]);
     const close = useCallback(() => {
         setOpen(false);

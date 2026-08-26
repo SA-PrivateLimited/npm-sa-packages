@@ -53,7 +53,7 @@ export function Icon({
   style,
   label,
   filled = false,
-  weight = 300,
+  weight = 400,
   size = 20,
 }: IconProps) {
   const fontSize = typeof size === 'number' ? `${size}px` : size;
@@ -63,7 +63,10 @@ export function Icon({
       className={`material-symbols-outlined hs-icon ${className}`.trim()}
       style={{
         fontSize,
+        fontFamily: "'Material Symbols Outlined', sans-serif",
         fontVariationSettings: `'FILL' ${filled ? 1 : 0}, 'wght' ${weight}, 'GRAD' 0, 'opsz' 24`,
+        WebkitFontFeatureSettings: "'liga'",
+        fontFeatureSettings: "'liga'",
         ...style,
       }}
       aria-hidden={label ? undefined : true}
