@@ -262,6 +262,21 @@ html.hs-overlay-open body {
   display: none;
 }
 
+/* Portaled desktop panel root — position/size set inline from trigger rect */
+.hs-dd__desktop-overlay {
+  box-sizing: border-box;
+}
+
+.hs-dd__desktop-overlay .hs-dd__panel {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  width: 100%;
+  max-height: inherit;
+  z-index: 1;
+}
+
 .hs-dd__panel {
   position: absolute;
   left: 0;
@@ -1235,6 +1250,7 @@ textarea.hs-input {
   align-items: center;
   padding: 0 12px;
   font-weight: 600;
+  font-size: 16px;
   background: var(--hs-background, #f7fafc);
   border-right: 1px solid var(--hs-border, #e2e8f0);
   color: var(--hs-text, #1a202c);
@@ -1246,7 +1262,8 @@ textarea.hs-input {
   border: none;
   outline: none;
   padding: 0 var(--hs-control-px);
-  font-size: 14px;
+  /* 16px minimum — iOS Safari zooms the page when focused inputs are < 16px */
+  font-size: 16px;
   background: transparent;
   color: var(--hs-text, #1a202c);
 }
@@ -1441,16 +1458,18 @@ textarea.hs-input {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Reserve space at the bottom so the modal never slides under the footer */
-  padding: 16px 16px calc(16px + var(--hs-footer-h, 0px)) 16px;
+  /* Top safe padding keeps dialog close control visible; footer var clears tab bar */
+  padding: max(16px, env(safe-area-inset-top, 0px)) 16px
+    calc(16px + var(--hs-footer-h, 0px)) 16px;
+  box-sizing: border-box;
 }
 
 .hs-modal {
   width: min(100%, 480px);
   /* Subtract footer height from available modal space */
   max-height: min(
-    calc(90dvh - var(--hs-footer-h, 0px)),
-    720px
+    calc(90dvh - var(--hs-footer-h, 0px) - env(safe-area-inset-top, 0px)),
+    640px
   );
   /* Flex column so header stays pinned and body scrolls independently */
   display: flex;
@@ -1547,8 +1566,11 @@ textarea.hs-input {
 
 .hs-drawer--bottom {
   width: 100%;
-  /* Subtract footer height so the sheet never extends behind the tabbar */
-  max-height: calc(85dvh - var(--hs-footer-h, 0px));
+  /* Leave room for app top bar + footer so the sheet header/close stays visible */
+  max-height: calc(
+    100dvh - var(--hs-footer-h, 0px) - max(56px, env(safe-area-inset-top, 0px)) -
+      12px
+  );
   margin-top: auto;
   border-radius: 16px 16px 0 0;
 }
@@ -1559,7 +1581,11 @@ textarea.hs-input {
 
 .hs-drawer-backdrop:has(.hs-drawer--bottom) {
   align-items: flex-end;
-  /* Bottom drawer sits above the footer */
+  /* Leave clear space under the app top bar so sheet headers stay visible */
+  padding-top: max(
+    12px,
+    calc(var(--mobile-header-h, var(--topbar-h, 56px)) + env(safe-area-inset-top, 0px))
+  );
   padding-bottom: var(--hs-footer-h, 0px);
 }
 

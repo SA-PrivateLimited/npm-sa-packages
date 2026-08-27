@@ -1,4 +1,5 @@
 import type {CSSProperties, ReactNode} from 'react';
+import {createPortal} from 'react-dom';
 import {Icon} from './Icon.js';
 import {useOverlayScrollLock} from './useMobileSheetOverlay.js';
 
@@ -33,7 +34,7 @@ export function Drawer({
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       className="hs-drawer-backdrop"
       role="presentation"
@@ -62,6 +63,7 @@ export function Drawer({
         <div className="hs-drawer__body">{children}</div>
         {footer ? <div className="hs-drawer__footer">{footer}</div> : null}
       </aside>
-    </div>
+    </div>,
+    document.body,
   );
 }
