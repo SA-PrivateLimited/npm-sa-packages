@@ -1,4 +1,5 @@
 import {useEffect, type CSSProperties, type ReactNode} from 'react';
+import {createPortal} from 'react-dom';
 import {Icon} from './Icon.js';
 import {useOverlayScrollLock} from './useMobileSheetOverlay.js';
 
@@ -38,7 +39,7 @@ export function Modal({
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       className="hs-modal-backdrop"
       role="presentation"
@@ -54,7 +55,8 @@ export function Modal({
         onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -82,7 +84,12 @@ export function Dialog({
   testId = 'hs-dialog',
 }: DialogProps) {
   return (
-    <Modal open={open} onClose={onClose} className={className} style={style} testId={testId}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      className={className}
+      style={style}
+      testId={testId}>
       <div className="hs-dialog">
         {(title || showClose) && (
           <div className="hs-dialog__header">
