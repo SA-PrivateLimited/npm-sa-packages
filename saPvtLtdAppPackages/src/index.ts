@@ -112,3 +112,43 @@ export {
   formatPhoneDisplay,
   INDIA_DIAL_CODE,
 } from './phone';
+
+export {
+  SERVICE_CATALOG,
+  FEATURED_SERVICE_KEYS,
+  SERVICE_GROUPS,
+  resolveServiceMeta,
+  matchesServiceSearch,
+  bilingualProfessionLine,
+  bilingualServiceNames,
+  servicePrimaryName,
+  serviceSelectSearchText,
+} from './serviceCatalog';
+export type {AppLang, LocalizedText, ServiceMeta} from './serviceCatalog';
+
+export {
+  registerNativeContactPicker,
+  isNativeContactPickerRegistered,
+  pickPhoneContact,
+  normalizeIndianMobile,
+} from './contacts';
+export type {
+  PickedContact,
+  NativeContactRecord,
+  NativeContactPicker,
+} from './contacts';
+
+export {
+  customerDisplayName,
+  isCustomerProfileIncomplete,
+  isTemporaryProfileName,
+} from './identity';
+
+export type {
+  SessionUser,
+  ServiceCategory,
+  QuestionnaireQuestion,
+  UserRole,
+  ApprovalStatus,
+  ServiceRequestStatus,
+} from './types';

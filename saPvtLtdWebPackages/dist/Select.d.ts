@@ -3,6 +3,8 @@ export interface SelectOption {
     value: string;
     label: string;
     disabled?: boolean;
+    /** Extra text included when filtering with `showSearch` (e.g. Hindi search terms). */
+    searchText?: string;
 }
 export interface SelectProps {
     label?: string;

@@ -126,7 +126,7 @@ html.hs-overlay-open body {
   align-items: center;
   justify-content: center;
   user-select: none;
-  font-family: 'Material Symbols Outlined', sans-serif;
+  font-family: 'Material Symbols Outlined', sans-serif !important;
   font-style: normal;
   font-weight: normal;
   line-height: 1;
@@ -135,6 +135,8 @@ html.hs-overlay-open body {
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
 
