@@ -167,7 +167,7 @@ html.hs-overlay-open body {
   background: var(--hs-surface, #fff);
   color: var(--hs-text, #1a202c);
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.25;
   text-align: left;
   cursor: pointer;
@@ -318,7 +318,7 @@ html.hs-overlay-open body {
   border: 1px solid var(--hs-border, #e2e8f0);
   border-radius: 8px;
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
   background: var(--hs-bg, #f5f7fa);
   color: var(--hs-text, #1a202c);
 }
@@ -466,17 +466,19 @@ html.hs-overlay-open body {
 
   .hs-dd__search-input {
     /* iOS auto-zooms inputs below 16px, which shifts the layout horizontally. */
-    font-size: 16px;
+    font-size: 16px !important;
   }
 
   .hs-input,
   textarea.hs-input,
-  .hs-phone__input {
-    font-size: 16px;
+  .hs-phone__input,
+  .hs-search__input,
+  .hs-dd__trigger {
+    font-size: 16px !important;
   }
 
   .hs-phone__prefix {
-    font-size: 16px;
+    font-size: 16px !important;
   }
 
 
@@ -503,7 +505,7 @@ html.hs-overlay-open body {
     height: var(--hs-control-h);
     min-height: var(--hs-control-h);
     border-radius: var(--hs-radius-sm);
-    font-size: 16px;
+    font-size: 16px !important;
     line-height: 1.25;
   }
 }
@@ -1181,7 +1183,7 @@ button.hs-card {
   padding: 0 var(--hs-control-px);
   background: transparent;
   color: var(--hs-text, #1a202c);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 textarea.hs-input {
@@ -1438,7 +1440,8 @@ textarea.hs-input {
   border: none;
   outline: none;
   background: transparent;
-  font-size: 15px;
+  /* 16px minimum — prevents iOS Safari focus zoom on mobile search fields */
+  font-size: 16px;
   color: var(--hs-text, #1a202c);
 }
 
@@ -2192,7 +2195,7 @@ textarea.hs-input {
   }
 }
 
-/* MobilePhotoPicker — camera vs gallery on Android */
+/* MobilePhotoPicker — camera vs gallery; label-triggered for iOS/Safari */
 .hs-mobile-photo-picker {
   display: flex;
   gap: var(--hs-space-2, 8px);
@@ -2203,13 +2206,42 @@ textarea.hs-input {
   flex-direction: column;
 }
 
-.hs-mobile-photo-picker__btn {
+.hs-mobile-photo-picker__label {
   flex: 1 1 auto;
   min-width: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.hs-mobile-photo-picker__label.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.hs-mobile-photo-picker__btn {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .hs-mobile-photo-picker__btn .hs-btn__label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Visually hidden but still clickable (hidden attribute breaks iOS file pick). */
+.hs-mobile-photo-picker__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
 }

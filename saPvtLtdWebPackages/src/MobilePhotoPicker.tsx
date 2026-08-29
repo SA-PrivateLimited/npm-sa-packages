@@ -1,5 +1,10 @@
-import {useRef, type ChangeEvent, type CSSProperties, type RefObject} from 'react';
-import {Button} from './Button.js';
+import {
+  useId,
+  useRef,
+  type ChangeEvent,
+  type CSSProperties,
+  type RefObject,
+} from 'react';
 import {Icon} from './Icon.js';
 
 export interface MobilePhotoPickerProps {
@@ -19,18 +24,24 @@ export interface MobilePhotoPickerProps {
   galleryInputRef?: RefObject<HTMLInputElement | null>;
 }
 
-const DEFAULT_GALLERY_ACCEPT = 'image/jpeg,image/png,image/webp';
+/** Gallery: include HEIC + image/* so iPhone and desktop picks always bind. */
+const DEFAULT_GALLERY_ACCEPT =
+  'image/jpeg,image/png,image/webp,image/heic,image/heif,image/*,.heic,.heif';
 
-function filesFromEvent(e: ChangeEvent<HTMLInputElement>): File[] {
-  const list = e.target.files;
-  e.target.value = '';
-  if (!list?.length) return [];
-  return Array.from(list);
+function filesFromInput(input: HTMLInputElement): File[] {
+  if (!input.files?.length) return [];
+  return Array.from(input.files);
+}
+
+function resetInputLater(input: HTMLInputElement) {
+  window.setTimeout(() => {
+    input.value = '';
+  }, 0);
 }
 
 /**
  * Mobile-friendly photo source control — separate camera vs gallery intents.
- * Android Chrome often hides camera when a single file input uses MIME types without capture.
+ * Uses native <label htmlFor> (not programmatic .click()) for reliable iOS/Safari.
  */
 export function MobilePhotoPicker({
   onChange,
@@ -45,12 +56,38 @@ export function MobilePhotoPicker({
   testId = 'hs-mobile-photo-picker',
   galleryInputRef,
 }: MobilePhotoPickerProps) {
+  const uid = useId();
+  const cameraId = `${uid}-camera`;
+  const galleryId = `${uid}-gallery`;
   const cameraRef = useRef<HTMLInputElement>(null);
   const internalGalleryRef = useRef<HTMLInputElement>(null);
-  const galleryRef = galleryInputRef ?? internalGalleryRef;
+  const lastEmitRef = useRef('');
+
+  const setGalleryRef = (node: HTMLInputElement | null) => {
+    internalGalleryRef.current = node;
+    if (galleryInputRef) {
+      galleryInputRef.current = node;
+    }
+  };
 
   const emit = (files: File[]) => {
-    if (files.length) onChange(files);
+    if (!files.length) return;
+    const key = files
+      .map((f) => `${f.name}:${f.size}:${f.lastModified}`)
+      .join('|');
+    if (key === lastEmitRef.current) return;
+    lastEmitRef.current = key;
+    onChange(files);
+    window.setTimeout(() => {
+      lastEmitRef.current = '';
+    }, 300);
+  };
+
+  const onPick = (e: ChangeEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
+    const files = filesFromInput(input);
+    resetInputLater(input);
+    emit(files);
   };
 
   const layoutClass =
@@ -58,51 +95,60 @@ export function MobilePhotoPicker({
       ? 'hs-mobile-photo-picker--stack'
       : 'hs-mobile-photo-picker--inline';
 
+  const btnClass = (extra: string) =>
+    `hs-btn hs-btn--secondary hs-btn--sm hs-mobile-photo-picker__btn ${extra}`.trim();
+
   return (
     <div
       className={`hs-mobile-photo-picker ${layoutClass} ${className}`.trim()}
       style={style}
       data-testid={testId}>
-      <Button
-        type="button"
-        variant="secondary"
-        size="sm"
-        disabled={disabled}
-        className="hs-mobile-photo-picker__btn"
-        testId={`${testId}-camera`}
-        onClick={() => cameraRef.current?.click()}>
-        <Icon name="photo_camera" size={16} />
-        {cameraLabel}
-      </Button>
-      <Button
-        type="button"
-        variant="secondary"
-        size="sm"
-        disabled={disabled}
-        className="hs-mobile-photo-picker__btn"
-        testId={`${testId}-gallery`}
-        onClick={() => galleryRef.current?.click()}>
-        <Icon name="photo_library" size={16} />
-        {galleryLabel}
-      </Button>
+      <label
+        htmlFor={disabled ? undefined : cameraId}
+        className={`hs-mobile-photo-picker__label${disabled ? ' is-disabled' : ''}`}
+        data-testid={`${testId}-camera`}>
+        <span className={btnClass('hs-mobile-photo-picker__btn--camera')}>
+          <span className="hs-btn__label">
+            <Icon name="photo_camera" size={16} />
+            {cameraLabel}
+          </span>
+        </span>
+      </label>
+      <label
+        htmlFor={disabled ? undefined : galleryId}
+        className={`hs-mobile-photo-picker__label${disabled ? ' is-disabled' : ''}`}
+        data-testid={`${testId}-gallery`}>
+        <span className={btnClass('hs-mobile-photo-picker__btn--gallery')}>
+          <span className="hs-btn__label">
+            <Icon name="photo_library" size={16} />
+            {galleryLabel}
+          </span>
+        </span>
+      </label>
       <input
+        id={cameraId}
         ref={cameraRef}
         type="file"
         accept="image/*"
         capture="environment"
         multiple={multiple}
-        hidden
+        className="hs-mobile-photo-picker__input"
         disabled={disabled}
-        onChange={(e) => emit(filesFromEvent(e))}
+        tabIndex={-1}
+        aria-hidden
+        onChange={onPick}
       />
       <input
-        ref={galleryRef}
+        id={galleryId}
+        ref={setGalleryRef}
         type="file"
         accept={acceptGallery}
         multiple={multiple}
-        hidden
+        className="hs-mobile-photo-picker__input"
         disabled={disabled}
-        onChange={(e) => emit(filesFromEvent(e))}
+        tabIndex={-1}
+        aria-hidden
+        onChange={onPick}
       />
     </div>
   );
