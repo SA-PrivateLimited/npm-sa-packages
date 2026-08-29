@@ -29,6 +29,7 @@ export { Pagination } from './Pagination.js';
 export { FilterPanel } from './FilterPanel.js';
 export { PermissionSelector } from './PermissionSelector.js';
 export { ImageUpload } from './ImageUpload.js';
+export { MobilePhotoPicker } from './MobilePhotoPicker.js';
 export { DocumentViewer } from './DocumentViewer.js';
 export { ImageViewer } from './ImageViewer.js';
 export { EmptyState, ErrorState } from './EmptyState.js';

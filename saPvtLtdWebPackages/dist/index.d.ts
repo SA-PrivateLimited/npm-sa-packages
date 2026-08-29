@@ -56,6 +56,8 @@ export { PermissionSelector } from './PermissionSelector.js';
 export type { PermissionSelectorProps, PermissionModule, PermissionItem, } from './PermissionSelector.js';
 export { ImageUpload } from './ImageUpload.js';
 export type { ImageUploadProps } from './ImageUpload.js';
+export { MobilePhotoPicker } from './MobilePhotoPicker.js';
+export type { MobilePhotoPickerProps } from './MobilePhotoPicker.js';
 export { DocumentViewer } from './DocumentViewer.js';
 export type { DocumentViewerProps } from './DocumentViewer.js';
 export { ImageViewer } from './ImageViewer.js';
