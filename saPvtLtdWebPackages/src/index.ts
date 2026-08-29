@@ -97,6 +97,9 @@ export type {
 export {ImageUpload} from './ImageUpload.js';
 export type {ImageUploadProps} from './ImageUpload.js';
 
+export {MobilePhotoPicker} from './MobilePhotoPicker.js';
+export type {MobilePhotoPickerProps} from './MobilePhotoPicker.js';
+
 export {DocumentViewer} from './DocumentViewer.js';
 export type {DocumentViewerProps} from './DocumentViewer.js';
 

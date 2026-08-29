@@ -2191,3 +2191,25 @@ textarea.hs-input {
     padding: 44px 16px 12px;
   }
 }
+
+/* MobilePhotoPicker — camera vs gallery on Android */
+.hs-mobile-photo-picker {
+  display: flex;
+  gap: var(--hs-space-2, 8px);
+  flex-wrap: wrap;
+}
+
+.hs-mobile-photo-picker--stack {
+  flex-direction: column;
+}
+
+.hs-mobile-photo-picker__btn {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hs-mobile-photo-picker__btn .hs-btn__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
