@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
-import { useCallback, useEffect, useId, useMemo, useRef, useState, } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, } from 'react';
 import { createPortal } from 'react-dom';
 import { FieldWrap } from './FieldWrap.js';
 import { Icon } from './Icon.js';
@@ -16,8 +16,41 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
     const isMobileSheet = useMobileSheet();
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
+    const [desktopPanelStyle, setDesktopPanelStyle] = useState({});
     const canClear = allowClear ?? Boolean(placeholder);
     useOverlayScrollLock(open && isMobileSheet);
+    // Desktop: portal + fixed coords so overflow:hidden ancestors (e.g. crystal cards)
+    // cannot clip the dropdown panel.
+    useLayoutEffect(() => {
+        if (!open || isMobileSheet)
+            return;
+        const update = () => {
+            const el = rootRef.current;
+            if (!el)
+                return;
+            const rect = el.getBoundingClientRect();
+            const gap = 4;
+            const maxH = 280;
+            const spaceBelow = window.innerHeight - rect.bottom - gap - 8;
+            const openUp = spaceBelow < 160 && rect.top > spaceBelow;
+            setDesktopPanelStyle({
+                position: 'fixed',
+                left: rect.left,
+                width: Math.max(rect.width, 160),
+                zIndex: 1100,
+                ...(openUp
+                    ? { bottom: window.innerHeight - rect.top + gap, top: 'auto', maxHeight: Math.min(maxH, rect.top - gap - 8) }
+                    : { top: rect.bottom + gap, bottom: 'auto', maxHeight: Math.min(maxH, Math.max(120, spaceBelow)) }),
+            });
+        };
+        update();
+        window.addEventListener('resize', update);
+        window.addEventListener('scroll', update, true);
+        return () => {
+            window.removeEventListener('resize', update);
+            window.removeEventListener('scroll', update, true);
+        };
+    }, [open, isMobileSheet]);
     const selected = useMemo(() => options.find((o) => o.value === value), [options, value]);
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -69,7 +102,7 @@ export function Select({ label, options, value, onChange, placeholder = 'Selectâ
         if (isMobileSheet) {
             return createPortal(_jsx("div", { ref: overlayRef, className: "hs-dd__mobile-overlay", children: sheet }), document.body);
         }
-        return _jsx("div", { ref: overlayRef, children: sheet });
+        return createPortal(_jsx("div", { ref: overlayRef, className: "hs-dd__desktop-overlay", style: desktopPanelStyle, children: sheet }), document.body);
     };
     const onTriggerKey = (e) => {
         if (disabled)

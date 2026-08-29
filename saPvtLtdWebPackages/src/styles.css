@@ -1227,6 +1227,11 @@ textarea.hs-input {
   border-width: 2px;
 }
 
+.hs-otp--secure .hs-otp__cell {
+  -webkit-text-security: disc;
+  text-security: disc;
+}
+
 .hs-phone {
   display: flex;
   flex-direction: column;
