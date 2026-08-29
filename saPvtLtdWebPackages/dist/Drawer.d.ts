@@ -12,5 +12,5 @@ export interface DrawerProps {
     style?: CSSProperties;
     testId?: string;
 }
-export declare function Drawer({ open, onClose, side, title, children, footer, showClose, className, style, testId, }: DrawerProps): import("react").JSX.Element | null;
+export declare function Drawer({ open, onClose, side, title, children, footer, showClose, className, style, testId, }: DrawerProps): import("react").ReactPortal | null;
 //# sourceMappingURL=Drawer.d.ts.map

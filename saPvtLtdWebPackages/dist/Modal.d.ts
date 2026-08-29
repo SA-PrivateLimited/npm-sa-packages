@@ -11,7 +11,7 @@ export interface ModalProps {
     style?: CSSProperties;
     testId?: string;
 }
-export declare function Modal({ open, onClose, children, closeOnBackdrop, closeOnEscape, className, style, testId, }: ModalProps): import("react").JSX.Element | null;
+export declare function Modal({ open, onClose, children, closeOnBackdrop, closeOnEscape, className, style, testId, }: ModalProps): import("react").ReactPortal | null;
 export interface DialogProps {
     open: boolean;
     onClose: () => void;

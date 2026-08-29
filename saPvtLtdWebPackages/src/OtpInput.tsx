@@ -49,10 +49,13 @@ export function OtpInput({
     if (autoFocus && !disabled) {
       const idx = Math.min(value.length, length - 1);
       setFocusedIndex(idx);
-      requestAnimationFrame(() => refs.current[idx]?.focus());
+      requestAnimationFrame(() => {
+        refs.current[idx]?.focus({preventScroll: true});
+      });
     }
+    // Only autofocus on mount — not when disabled toggles during submit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoFocus, disabled, length]);
+  }, [autoFocus, length]);
 
   useEffect(() => {
     const cleaned = String(value || '')
@@ -75,7 +78,9 @@ export function OtpInput({
   const focusAt = (index: number) => {
     const clamped = Math.max(0, Math.min(index, length - 1));
     setFocusedIndex(clamped);
-    requestAnimationFrame(() => refs.current[clamped]?.focus());
+    requestAnimationFrame(() => {
+      refs.current[clamped]?.focus({preventScroll: true});
+    });
   };
 
   const handleChange = (index: number, text: string) => {
@@ -110,7 +115,7 @@ export function OtpInput({
 
   return (
     <div
-      className={`hs-otp ${className}`.trim()}
+      className={`hs-otp ${secure ? 'hs-otp--secure' : ''} ${className}`.trim()}
       style={style}
       data-testid={testId}
       role="group"
@@ -123,9 +128,9 @@ export function OtpInput({
           }}
           className={`hs-otp__cell${focusedIndex === index ? ' is-focused' : ''}`}
           value={digit}
-          type={secure ? 'password' : 'text'}
+          type="text"
           inputMode="numeric"
-          autoComplete="one-time-code"
+          autoComplete={secure ? 'off' : 'one-time-code'}
           maxLength={length}
           disabled={disabled}
           aria-label={`${accessibilityLabelPrefix} digit ${index + 1}`}

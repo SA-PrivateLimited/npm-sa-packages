@@ -15,10 +15,13 @@ export function OtpInput({ value, onChange, length: lengthProp, onComplete, disa
         if (autoFocus && !disabled) {
             const idx = Math.min(value.length, length - 1);
             setFocusedIndex(idx);
-            requestAnimationFrame(() => refs.current[idx]?.focus());
+            requestAnimationFrame(() => {
+                refs.current[idx]?.focus({ preventScroll: true });
+            });
         }
+        // Only autofocus on mount — not when disabled toggles during submit.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [autoFocus, disabled, length]);
+    }, [autoFocus, length]);
     useEffect(() => {
         const cleaned = String(value || '')
             .replace(/\D/g, '')
@@ -39,7 +42,9 @@ export function OtpInput({ value, onChange, length: lengthProp, onComplete, disa
     const focusAt = (index) => {
         const clamped = Math.max(0, Math.min(index, length - 1));
         setFocusedIndex(clamped);
-        requestAnimationFrame(() => refs.current[clamped]?.focus());
+        requestAnimationFrame(() => {
+            refs.current[clamped]?.focus({ preventScroll: true });
+        });
     };
     const handleChange = (index, text) => {
         const cleaned = text.replace(/\D/g, '');
@@ -74,9 +79,9 @@ export function OtpInput({ value, onChange, length: lengthProp, onComplete, disa
         else
             setFocusedIndex(index);
     };
-    return (_jsx("div", { className: `hs-otp ${className}`.trim(), style: style, "data-testid": testId, role: "group", "aria-label": accessibilityLabelPrefix, children: digits.map((digit, index) => (_jsx("input", { ref: (el) => {
+    return (_jsx("div", { className: `hs-otp ${secure ? 'hs-otp--secure' : ''} ${className}`.trim(), style: style, "data-testid": testId, role: "group", "aria-label": accessibilityLabelPrefix, children: digits.map((digit, index) => (_jsx("input", { ref: (el) => {
                 refs.current[index] = el;
-            }, className: `hs-otp__cell${focusedIndex === index ? ' is-focused' : ''}`, value: digit, type: secure ? 'password' : 'text', inputMode: "numeric", autoComplete: "one-time-code", maxLength: length, disabled: disabled, "aria-label": `${accessibilityLabelPrefix} digit ${index + 1}`, onChange: (e) => handleChange(index, e.target.value), onFocus: () => setFocusedIndex(index), onKeyDown: (e) => {
+            }, className: `hs-otp__cell${focusedIndex === index ? ' is-focused' : ''}`, value: digit, type: "text", inputMode: "numeric", autoComplete: secure ? 'off' : 'one-time-code', maxLength: length, disabled: disabled, "aria-label": `${accessibilityLabelPrefix} digit ${index + 1}`, onChange: (e) => handleChange(index, e.target.value), onFocus: () => setFocusedIndex(index), onKeyDown: (e) => {
                 if (e.key === 'ArrowLeft' && index > 0) {
                     e.preventDefault();
                     focusAt(index - 1);
