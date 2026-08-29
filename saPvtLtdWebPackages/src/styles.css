@@ -42,24 +42,24 @@ html.hs-overlay-open body {
 }
 
 .hs-banner--success {
-  background: color-mix(in srgb, var(--hs-success, #38a169) 12%, white);
-  border-color: color-mix(in srgb, var(--hs-success, #38a169) 35%, white);
+  background: color-mix(in srgb, var(--hs-success, #38a169) 12%, var(--hs-surface, #ffffff));
+  border-color: color-mix(in srgb, var(--hs-success, #38a169) 35%, var(--hs-surface, #ffffff));
   color: var(--hs-text, #1a202c);
 }
 
 .hs-banner--error {
-  background: color-mix(in srgb, var(--hs-error, #e53e3e) 12%, white);
-  border-color: color-mix(in srgb, var(--hs-error, #e53e3e) 35%, white);
+  background: color-mix(in srgb, var(--hs-error, #e53e3e) 12%, var(--hs-surface, #ffffff));
+  border-color: color-mix(in srgb, var(--hs-error, #e53e3e) 35%, var(--hs-surface, #ffffff));
 }
 
 .hs-banner--info {
-  background: color-mix(in srgb, var(--hs-primary, #3182ce) 12%, white);
-  border-color: color-mix(in srgb, var(--hs-primary, #3182ce) 35%, white);
+  background: color-mix(in srgb, var(--hs-primary, #3182ce) 12%, var(--hs-surface, #ffffff));
+  border-color: color-mix(in srgb, var(--hs-primary, #3182ce) 35%, var(--hs-surface, #ffffff));
 }
 
 .hs-banner--warning {
-  background: color-mix(in srgb, var(--hs-warning, #dd6b20) 12%, white);
-  border-color: color-mix(in srgb, var(--hs-warning, #dd6b20) 35%, white);
+  background: color-mix(in srgb, var(--hs-warning, #dd6b20) 12%, var(--hs-surface, #ffffff));
+  border-color: color-mix(in srgb, var(--hs-warning, #dd6b20) 35%, var(--hs-surface, #ffffff));
 }
 
 .hs-banner__body {
@@ -1205,31 +1205,57 @@ textarea.hs-input {
 }
 
 .hs-otp {
+  position: relative;
   display: flex;
   gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+/* Single real input — avoids iOS focus/scroll flicker from hopping between cells */
+.hs-otp__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font-size: 16px;
+  opacity: 0;
+  z-index: 2;
+  cursor: text;
+}
+
+.hs-otp__input:focus {
+  outline: none;
 }
 
 .hs-otp__cell {
   flex: 1;
   max-width: 52px;
   aspect-ratio: 1;
+  display: grid;
+  place-items: center;
   border: 1.5px solid var(--hs-border, #e2e8f0);
   border-radius: 12px;
   text-align: center;
   font-size: 22px;
   font-weight: 700;
+  line-height: 1;
   color: var(--hs-text, #1a202c);
   background: var(--hs-surface, #fff);
+  pointer-events: none;
+  user-select: none;
 }
 
+.hs-otp__cell.is-active,
 .hs-otp__cell.is-focused {
   border-color: var(--hs-primary, #3182ce);
-  border-width: 2px;
-}
-
-.hs-otp--secure .hs-otp__cell {
-  -webkit-text-security: disc;
-  text-security: disc;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--hs-primary, #3182ce) 22%, transparent);
 }
 
 .hs-phone {
