@@ -8,6 +8,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type TouchEvent as ReactTouchEvent,
 } from 'react';
+import {createPortal} from 'react-dom';
 import {Icon} from './Icon.js';
 import {useOverlayScrollLock} from './useMobileSheetOverlay.js';
 
@@ -142,7 +143,7 @@ export function ImageViewer({
   const canPrev = index > 0;
   const canNext = index < urls.length - 1;
 
-  return (
+  return createPortal(
     <div
       className={`hs-image-viewer ${className}`.trim()}
       style={style}
@@ -236,6 +237,7 @@ export function ImageViewer({
           </div>
         ) : null}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

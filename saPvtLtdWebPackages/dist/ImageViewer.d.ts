@@ -19,5 +19,5 @@ export interface ImageViewerProps {
  * Centered image modal card — presentation only.
  * Pass image URLs via props; no S3/upload/API logic.
  */
-export declare function ImageViewer({ images, initialIndex, open, onClose, label, closeLabel, prevLabel, nextLabel, className, style, testId, }: ImageViewerProps): import("react").JSX.Element | null;
+export declare function ImageViewer({ images, initialIndex, open, onClose, label, closeLabel, prevLabel, nextLabel, className, style, testId, }: ImageViewerProps): import("react").ReactPortal | null;
 //# sourceMappingURL=ImageViewer.d.ts.map
