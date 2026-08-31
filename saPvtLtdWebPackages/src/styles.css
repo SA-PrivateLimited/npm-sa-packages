@@ -2066,24 +2066,36 @@ textarea.hs-input {
   border: 0;
 }
 
+/*
+ * Close/nav must stay readable on light photos, dark night-vision surfaces,
+ * and when host apps map --hs-bg instead of --hs-background.
+ */
 .hs-image-viewer__close {
   position: absolute;
   top: 8px;
   right: 8px;
   z-index: 3;
-  width: 36px;
-  height: 36px;
-  border: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--hs-text, #1a202c) 8%, transparent);
-  color: var(--hs-text, #1a202c);
+  background: rgba(15, 23, 42, 0.72);
+  color: #fff;
   display: grid;
   place-items: center;
   cursor: pointer;
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hs-image-viewer__close .hs-icon {
+  color: #fff;
 }
 
 .hs-image-viewer__close:focus-visible {
-  outline: 2px solid var(--hs-primary, #2e7d32);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
@@ -2092,16 +2104,22 @@ textarea.hs-input {
   top: 50%;
   z-index: 3;
   transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--hs-text, #1a202c) 10%, #fff);
-  color: var(--hs-text, #1a202c);
+  background: rgba(15, 23, 42, 0.72);
+  color: #fff;
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.hs-image-viewer__nav .hs-icon {
+  color: #fff;
 }
 
 .hs-image-viewer__nav:disabled {
@@ -2124,7 +2142,7 @@ textarea.hs-input {
   display: grid;
   place-items: center;
   padding: 44px 40px 16px;
-  background: var(--hs-background, #f5f7fa);
+  background: var(--hs-background, var(--hs-bg, #f5f7fa));
 }
 
 .hs-image-viewer__img {
@@ -2229,6 +2247,34 @@ textarea.hs-input {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.hs-mobile-photo-picker--quiet {
+  gap: 4px;
+}
+
+.hs-mobile-photo-picker--quiet .hs-mobile-photo-picker__label {
+  flex: 0 0 auto;
+}
+
+.hs-mobile-photo-picker__quiet-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--hs-text-secondary, #64748b);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.hs-mobile-photo-picker--quiet .hs-mobile-photo-picker__label:hover .hs-mobile-photo-picker__quiet-btn {
+  background: color-mix(in srgb, var(--hs-text, #1a202c) 6%, transparent);
+  color: var(--hs-text, #1a202c);
 }
 
 /* Visually hidden but still clickable (hidden attribute breaks iOS file pick). */
