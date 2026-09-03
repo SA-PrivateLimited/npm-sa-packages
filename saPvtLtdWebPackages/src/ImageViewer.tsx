@@ -12,6 +12,56 @@ import {createPortal} from 'react-dom';
 import {Icon} from './Icon.js';
 import {useOverlayScrollLock} from './useMobileSheetOverlay.js';
 
+/** Inline so the watermark never depends on /logo.png loading. */
+function AkansoMarkSvg({title}: {title: string}) {
+  const uid = useId().replace(/:/g, '');
+  const bg = `${uid}-bg`;
+  const glow = `${uid}-glow`;
+  return (
+    <svg
+      className="hs-image-viewer__mark-svg"
+      viewBox="0 0 512 512"
+      role="img"
+      aria-label={title}>
+      <defs>
+        <linearGradient id={bg} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#1A8FA8" />
+          <stop offset="55%" stopColor="#0F766E" />
+          <stop offset="100%" stopColor="#0B5E58" />
+        </linearGradient>
+        <radialGradient id={glow} cx="50%" cy="42%" r="58%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="512" height="512" rx="112" fill={`url(#${bg})`} />
+      <rect width="512" height="512" rx="112" fill={`url(#${glow})`} />
+      <g transform="translate(56 78) scale(0.4)">
+        <path
+          fill="#06254A"
+          d="M500 55 L760 655 L665 625 L610 505 L500 270 L390 505 L335 625 L240 655 Z"
+        />
+        <path fill="#FFFFFF" d="M500 155 L405 470 L595 470 Z" />
+        <path
+          fill="#18A82A"
+          d="M275 585 L500 390 L725 585 L675 575 L500 445 L325 575 Z"
+        />
+        <path fill="#FFFFFF" d="M350 560 L500 450 L650 560 L650 650 L350 650 Z" />
+        <g fill="#18A82A">
+          <rect x="465" y="535" width="32" height="32" rx="1" />
+          <rect x="505" y="535" width="32" height="32" rx="1" />
+          <rect x="465" y="575" width="32" height="32" rx="1" />
+          <rect x="505" y="575" width="32" height="32" rx="1" />
+        </g>
+        <path
+          fill="#18A82A"
+          d="M145 680 C275 735 385 710 500 675 C635 635 765 640 870 705 C745 675 650 690 535 730 C385 782 250 775 145 680 Z"
+        />
+      </g>
+    </svg>
+  );
+}
+
 export interface ImageViewerProps {
   /** Image URLs to show (caller supplies; typically max 3 for showcase). */
   images: string[];
@@ -48,7 +98,7 @@ export function ImageViewer({
   className = '',
   style,
   testId = 'hs-image-viewer',
-  brandMarkSrc = '/logo.svg',
+  brandMarkSrc = '/logo.png',
   brandMarkLabel = 'Akanso',
 }: ImageViewerProps) {
   const titleId = useId();
@@ -57,7 +107,7 @@ export function ImageViewer({
   const urls = images.filter((u) => typeof u === 'string' && u.trim());
   const [index, setIndex] = useState(0);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [markFailed, setMarkFailed] = useState(false);
+  const [brandImgFailed, setBrandImgFailed] = useState(false);
 
   useOverlayScrollLock(open && urls.length > 0);
 
@@ -72,6 +122,10 @@ export function ImageViewer({
     if (!open) return;
     setStatus('loading');
   }, [index, open]);
+
+  useEffect(() => {
+    setBrandImgFailed(false);
+  }, [brandMarkSrc, open]);
 
   useEffect(() => {
     if (!open) return;
@@ -223,17 +277,20 @@ export function ImageViewer({
               onLoad={() => setStatus('ready')}
               onError={() => setStatus('error')}
             />
-            {status === 'ready' && brandMarkSrc && !markFailed ? (
+          </div>
+          <div className="hs-image-viewer__mark" title={brandMarkLabel}>
+            {brandMarkSrc && !brandImgFailed ? (
               <img
-                className="hs-image-viewer__mark"
+                className="hs-image-viewer__mark-img"
                 src={brandMarkSrc}
                 alt=""
-                title={brandMarkLabel}
                 draggable={false}
                 aria-hidden
-                onError={() => setMarkFailed(true)}
+                onError={() => setBrandImgFailed(true)}
               />
-            ) : null}
+            ) : (
+              <AkansoMarkSvg title={brandMarkLabel} />
+            )}
           </div>
         </div>
 
