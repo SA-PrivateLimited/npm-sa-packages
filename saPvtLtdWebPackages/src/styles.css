@@ -2139,21 +2139,23 @@ textarea.hs-input {
   position: relative;
   flex: 1;
   min-height: 220px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 44px 40px 16px;
   background: var(--hs-background, var(--hs-bg, #f5f7fa));
 }
 
 .hs-image-viewer__frame {
   position: relative;
-  display: inline-grid;
+  display: inline-block;
   max-width: 100%;
   max-height: 100%;
-  place-items: center;
+  line-height: 0;
 }
 
 .hs-image-viewer__img {
+  display: block;
   max-width: 100%;
   max-height: 100%;
   width: auto;
@@ -2171,22 +2173,34 @@ textarea.hs-input {
 
 .hs-image-viewer__mark {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
+  right: 12px;
+  bottom: 12px;
+  width: 40px;
+  height: 40px;
+  z-index: 4;
   pointer-events: none;
-  border-radius: 6px;
-  background: color-mix(in srgb, #fff 78%, transparent);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
-  z-index: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.hs-image-viewer__mark-img,
+.hs-image-viewer__mark-svg {
+  display: block;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .hs-image-viewer__status {
   position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
   color: var(--hs-text-secondary, #718096);
   font-size: 14px;
+  pointer-events: none;
 }
 
 .hs-image-viewer__footer {
