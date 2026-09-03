@@ -167,7 +167,7 @@ html.hs-overlay-open body {
   background: var(--hs-surface, #fff);
   color: var(--hs-text, #1a202c);
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.25;
   text-align: left;
   cursor: pointer;
@@ -318,7 +318,7 @@ html.hs-overlay-open body {
   border: 1px solid var(--hs-border, #e2e8f0);
   border-radius: 8px;
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
   background: var(--hs-bg, #f5f7fa);
   color: var(--hs-text, #1a202c);
 }
@@ -466,17 +466,19 @@ html.hs-overlay-open body {
 
   .hs-dd__search-input {
     /* iOS auto-zooms inputs below 16px, which shifts the layout horizontally. */
-    font-size: 16px;
+    font-size: 16px !important;
   }
 
   .hs-input,
   textarea.hs-input,
-  .hs-phone__input {
-    font-size: 16px;
+  .hs-phone__input,
+  .hs-search__input,
+  .hs-dd__trigger {
+    font-size: 16px !important;
   }
 
   .hs-phone__prefix {
-    font-size: 16px;
+    font-size: 16px !important;
   }
 
 
@@ -503,7 +505,7 @@ html.hs-overlay-open body {
     height: var(--hs-control-h);
     min-height: var(--hs-control-h);
     border-radius: var(--hs-radius-sm);
-    font-size: 16px;
+    font-size: 16px !important;
     line-height: 1.25;
   }
 }
@@ -1181,7 +1183,7 @@ button.hs-card {
   padding: 0 var(--hs-control-px);
   background: transparent;
   color: var(--hs-text, #1a202c);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 textarea.hs-input {
@@ -2125,6 +2127,14 @@ textarea.hs-input {
   background: var(--hs-background, #f5f7fa);
 }
 
+.hs-image-viewer__frame {
+  position: relative;
+  display: inline-grid;
+  max-width: 100%;
+  max-height: 100%;
+  place-items: center;
+}
+
 .hs-image-viewer__img {
   max-width: 100%;
   max-height: 100%;
@@ -2139,6 +2149,20 @@ textarea.hs-input {
 
 .hs-image-viewer__img.is-ready {
   opacity: 1;
+}
+
+.hs-image-viewer__mark {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  pointer-events: none;
+  border-radius: 6px;
+  background: color-mix(in srgb, #fff 78%, transparent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
+  z-index: 1;
 }
 
 .hs-image-viewer__status {

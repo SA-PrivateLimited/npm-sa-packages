@@ -2127,6 +2127,14 @@ textarea.hs-input {
   background: var(--hs-background, #f5f7fa);
 }
 
+.hs-image-viewer__frame {
+  position: relative;
+  display: inline-grid;
+  max-width: 100%;
+  max-height: 100%;
+  place-items: center;
+}
+
 .hs-image-viewer__img {
   max-width: 100%;
   max-height: 100%;
@@ -2141,6 +2149,20 @@ textarea.hs-input {
 
 .hs-image-viewer__img.is-ready {
   opacity: 1;
+}
+
+.hs-image-viewer__mark {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  pointer-events: none;
+  border-radius: 6px;
+  background: color-mix(in srgb, #fff 78%, transparent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
+  z-index: 1;
 }
 
 .hs-image-viewer__status {

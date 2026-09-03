@@ -14,10 +14,13 @@ export interface ImageViewerProps {
     className?: string;
     style?: CSSProperties;
     testId?: string;
+    /** Small corner mark on the photo (defaults to each app's `/logo.svg`). */
+    brandMarkSrc?: string;
+    brandMarkLabel?: string;
 }
 /**
  * Centered image modal card — presentation only.
  * Pass image URLs via props; no S3/upload/API logic.
  */
-export declare function ImageViewer({ images, initialIndex, open, onClose, label, closeLabel, prevLabel, nextLabel, className, style, testId, }: ImageViewerProps): import("react").JSX.Element | null;
+export declare function ImageViewer({ images, initialIndex, open, onClose, label, closeLabel, prevLabel, nextLabel, className, style, testId, brandMarkSrc, brandMarkLabel, }: ImageViewerProps): import("react").JSX.Element | null;
 //# sourceMappingURL=ImageViewer.d.ts.map
