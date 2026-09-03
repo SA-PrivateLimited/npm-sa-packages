@@ -18,7 +18,11 @@ export interface MobilePhotoPickerProps {
   galleryLabel?: string;
   className?: string;
   style?: CSSProperties;
-  layout?: 'inline' | 'stack';
+  /**
+   * `inline` / `stack` — full secondary buttons (profile, KYC).
+   * `quiet` — compact text actions for optional photos (request).
+   */
+  layout?: 'inline' | 'stack' | 'quiet';
   testId?: string;
   /** Optional ref to the gallery input (e.g. programmatic retry). */
   galleryInputRef?: RefObject<HTMLInputElement | null>;
@@ -93,10 +97,14 @@ export function MobilePhotoPicker({
   const layoutClass =
     layout === 'stack'
       ? 'hs-mobile-photo-picker--stack'
-      : 'hs-mobile-photo-picker--inline';
+      : layout === 'quiet'
+        ? 'hs-mobile-photo-picker--quiet'
+        : 'hs-mobile-photo-picker--inline';
 
-  const btnClass = (extra: string) =>
-    `hs-btn hs-btn--secondary hs-btn--sm hs-mobile-photo-picker__btn ${extra}`.trim();
+  const isQuiet = layout === 'quiet';
+  const actionClass = isQuiet
+    ? 'hs-mobile-photo-picker__quiet-btn'
+    : 'hs-btn hs-btn--secondary hs-btn--sm hs-mobile-photo-picker__btn';
 
   return (
     <div
@@ -107,22 +115,36 @@ export function MobilePhotoPicker({
         htmlFor={disabled ? undefined : cameraId}
         className={`hs-mobile-photo-picker__label${disabled ? ' is-disabled' : ''}`}
         data-testid={`${testId}-camera`}>
-        <span className={btnClass('hs-mobile-photo-picker__btn--camera')}>
-          <span className="hs-btn__label">
-            <Icon name="photo_camera" size={16} />
-            {cameraLabel}
-          </span>
+        <span className={`${actionClass} hs-mobile-photo-picker__btn--camera`}>
+          {isQuiet ? (
+            <>
+              <Icon name="photo_camera" size={18} />
+              {cameraLabel}
+            </>
+          ) : (
+            <span className="hs-btn__label">
+              <Icon name="photo_camera" size={16} />
+              {cameraLabel}
+            </span>
+          )}
         </span>
       </label>
       <label
         htmlFor={disabled ? undefined : galleryId}
         className={`hs-mobile-photo-picker__label${disabled ? ' is-disabled' : ''}`}
         data-testid={`${testId}-gallery`}>
-        <span className={btnClass('hs-mobile-photo-picker__btn--gallery')}>
-          <span className="hs-btn__label">
-            <Icon name="photo_library" size={16} />
-            {galleryLabel}
-          </span>
+        <span className={`${actionClass} hs-mobile-photo-picker__btn--gallery`}>
+          {isQuiet ? (
+            <>
+              <Icon name="photo_library" size={18} />
+              {galleryLabel}
+            </>
+          ) : (
+            <span className="hs-btn__label">
+              <Icon name="photo_library" size={16} />
+              {galleryLabel}
+            </span>
+          )}
         </span>
       </label>
       <input
