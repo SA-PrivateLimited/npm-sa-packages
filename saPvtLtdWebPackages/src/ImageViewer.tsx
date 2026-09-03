@@ -27,6 +27,9 @@ export interface ImageViewerProps {
   className?: string;
   style?: CSSProperties;
   testId?: string;
+  /** Small corner mark on the photo (defaults to each app's `/logo.svg`). */
+  brandMarkSrc?: string;
+  brandMarkLabel?: string;
 }
 
 /**
@@ -45,6 +48,8 @@ export function ImageViewer({
   className = '',
   style,
   testId = 'hs-image-viewer',
+  brandMarkSrc = '/logo.svg',
+  brandMarkLabel = 'Akanso',
 }: ImageViewerProps) {
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -52,6 +57,7 @@ export function ImageViewer({
   const urls = images.filter((u) => typeof u === 'string' && u.trim());
   const [index, setIndex] = useState(0);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [markFailed, setMarkFailed] = useState(false);
 
   useOverlayScrollLock(open && urls.length > 0);
 
@@ -205,17 +211,30 @@ export function ImageViewer({
               Image unavailable
             </span>
           ) : null}
-          <img
-            key={current}
-            className={`hs-image-viewer__img${
-              status === 'ready' ? ' is-ready' : ''
-            }`}
-            src={current}
-            alt=""
-            draggable={false}
-            onLoad={() => setStatus('ready')}
-            onError={() => setStatus('error')}
-          />
+          <div className="hs-image-viewer__frame">
+            <img
+              key={current}
+              className={`hs-image-viewer__img${
+                status === 'ready' ? ' is-ready' : ''
+              }`}
+              src={current}
+              alt=""
+              draggable={false}
+              onLoad={() => setStatus('ready')}
+              onError={() => setStatus('error')}
+            />
+            {status === 'ready' && brandMarkSrc && !markFailed ? (
+              <img
+                className="hs-image-viewer__mark"
+                src={brandMarkSrc}
+                alt=""
+                title={brandMarkLabel}
+                draggable={false}
+                aria-hidden
+                onError={() => setMarkFailed(true)}
+              />
+            ) : null}
+          </div>
         </div>
 
         {multi ? (

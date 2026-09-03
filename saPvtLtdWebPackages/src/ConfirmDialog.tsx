@@ -38,6 +38,7 @@ export function ConfirmDialog({
       open={open}
       onClose={onCancel}
       title={title}
+      showClose={false}
       className={`hs-confirm hs-confirm--${type} ${className}`.trim()}
       style={style}
       testId={testId}
