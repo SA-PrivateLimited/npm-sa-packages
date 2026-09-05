@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, type StyleProp, type ViewStyle} from 'react-native';
 import {useAppTheme, type AppThemeColors} from './theme';
 import {Button} from './Button';
+import {Icon} from './Icon';
 
 export interface ErrorStateProps {
   title?: string;
@@ -24,7 +25,7 @@ export function ErrorState({
 
   return (
     <View style={[styles.wrap, style]}>
-      <Text style={[styles.glyph, {color: theme.danger || '#FF3B30'}]}>!</Text>
+      <Icon name="error" size={40} color={theme.danger || '#FF3B30'} />
       <Text style={[styles.title, {color: theme.text}]}>{title}</Text>
       {message ? (
         <Text style={[styles.msg, {color: theme.textSecondary}]}>{message}</Text>

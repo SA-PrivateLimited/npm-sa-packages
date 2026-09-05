@@ -3,11 +3,11 @@ import {
   View,
   TextInput,
   Pressable,
-  Text,
   StyleSheet,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import {Icon} from './Icon';
 import {useAppTheme, type AppThemeColors} from './theme';
 
 export interface SearchBarProps {
@@ -38,7 +38,7 @@ export function SearchBar({
         {borderColor: theme.border, backgroundColor: theme.card},
         style,
       ]}>
-      <Text style={[styles.glyph, {color: theme.textSecondary}]}>⌕</Text>
+      <Icon name="search" size={20} color={theme.textSecondary} />
       <TextInput
         style={[styles.input, {color: theme.text}]}
         value={value}
@@ -55,7 +55,7 @@ export function SearchBar({
             onClear?.();
           }}
           hitSlop={8}>
-          <Text style={{color: theme.textSecondary, fontSize: 18}}>×</Text>
+          <Icon name="close" size={18} color={theme.textSecondary} />
         </Pressable>
       ) : null}
     </View>
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     paddingVertical: 8,
   },
 });

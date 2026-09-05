@@ -7,6 +7,7 @@ import {
   type ViewStyle,
   type TextStyle,
 } from 'react-native';
+import {Icon} from './Icon';
 
 export type BannerVariant = 'success' | 'error' | 'info' | 'warning';
 
@@ -64,7 +65,7 @@ export function Banner({
           accessibilityRole="button"
           accessibilityLabel="Dismiss"
           hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
-          <Text style={styles.dismiss}>✕</Text>
+          <Icon name="close" size={18} color="#718096" />
         </TouchableOpacity>
       ) : null}
     </View>
