@@ -10,12 +10,18 @@ export interface AppThemeColors {
   danger?: string;
   success?: string;
   warning?: string;
+  controlH?: number;
+  controlHLg?: number;
+  controlPx?: number;
+  radiusSm?: number;
+  radius?: number;
+  radiusCard?: number;
 }
 
 export const DEFAULT_APP_THEME: AppThemeColors = {
   primary: '#3182CE',
   background: '#F7FAFC',
-  card: '#FFFFFF',
+  card: 'rgba(255,255,255,0.82)',
   text: '#1A202C',
   textSecondary: '#718096',
   border: '#E2E8F0',

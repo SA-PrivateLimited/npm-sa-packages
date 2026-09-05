@@ -1,6 +1,6 @@
 {
   "name": "sapvt-ltd-app-packages",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "SA Pvt Ltd reusable React Native UI — Button, Input, Modal, Toast, Phone, OTP, theme, and more",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,7 +26,13 @@
   },
   "peerDependencies": {
     "react": ">=18",
-    "react-native": ">=0.73"
+    "react-native": ">=0.73",
+    "react-native-vector-icons": ">=10"
+  },
+  "peerDependenciesMeta": {
+    "react-native-vector-icons": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/react": "18.2.79",

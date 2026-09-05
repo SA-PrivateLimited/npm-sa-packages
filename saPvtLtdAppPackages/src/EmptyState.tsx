@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {useAppTheme, type AppThemeColors} from './theme';
+import {Icon} from './Icon';
 
 export interface EmptyStateProps {
   /** Unicode / emoji glyph (avoids vector-icons peer) */
@@ -14,6 +15,7 @@ export interface EmptyStateProps {
 
 export function EmptyState({
   iconGlyph = '📭',
+  icon,
   title,
   message,
   colors: colorsOverride,
@@ -22,7 +24,11 @@ export function EmptyState({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.glyph, {color: theme.textSecondary}]}>{iconGlyph}</Text>
+      {icon ? (
+        <Icon name={icon} size={48} color={theme.textSecondary} />
+      ) : (
+        <Text style={[styles.glyph, {color: theme.textSecondary}]}>{iconGlyph}</Text>
+      )}
       <Text style={[styles.title, {color: theme.text}]}>{title}</Text>
       <Text style={[styles.message, {color: theme.textSecondary}]}>
         {message}

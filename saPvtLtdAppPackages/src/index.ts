@@ -1,3 +1,42 @@
+export {HS, metricsFromTheme} from './tokens';
+export {
+  CUSTOMER_WEB,
+  PROVIDER_WEB,
+  customerAppThemeColors,
+  providerAppThemeColors,
+  webTabBarStyle,
+  webTabLabelStyle,
+} from './webChrome';
+
+export {FieldWrap} from './FieldWrap';
+export type {FieldWrapProps} from './FieldWrap';
+
+export {Icon} from './Icon';
+export type {IconProps, IconName} from './Icon';
+
+export {Chip, Chips} from './Chip';
+export type {ChipProps, ChipsProps, ChipVariant} from './Chip';
+
+export {Card} from './Card';
+export type {CardProps, CardPadding} from './Card';
+
+export {Widget} from './Widget';
+export type {WidgetProps} from './Widget';
+
+export {ImageViewer} from './ImageViewer';
+export type {ImageViewerProps} from './ImageViewer';
+
+export {MobilePhotoPicker} from './MobilePhotoPicker';
+export type {MobilePhotoPickerProps} from './MobilePhotoPicker';
+
+export {TreeMultiSelect, TreeMultiSelectStrategy} from './TreeMultiSelect';
+export type {TreeMultiSelectProps, TreeSelectNode} from './TreeMultiSelect';
+
+export {
+  canRequestThisProvider,
+  canCallThisProvider,
+} from './providerCtas';
+
 export {Banner} from './Banner';
 export type {BannerProps, BannerVariant} from './Banner';
 
@@ -13,8 +52,9 @@ export type {MultiSelectProps, MultiSelectOption} from './MultiSelect';
 
 export {VirtualList} from './VirtualList';
 export type {VirtualListProps, VirtualListColumn} from './VirtualList';
-/** Alias — Table is VirtualList */
+/** Alias — Table / VirtualTable is VirtualList */
 export {VirtualList as Table} from './VirtualList';
+export {VirtualList as VirtualTable} from './VirtualList';
 
 export {
   AppThemeProvider,

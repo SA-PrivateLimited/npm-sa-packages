@@ -31,6 +31,8 @@ export interface MultiSelectProps {
   doneLabel?: string;
   selectedCountLabel?: (count: number) => string;
   colors?: Partial<AppThemeColors>;
+  /** Same as Select — soft wash, no hard border (web crystal). */
+  variant?: 'default' | 'crystal';
 }
 
 export function MultiSelect({
@@ -48,10 +50,15 @@ export function MultiSelect({
   doneLabel = 'Done',
   selectedCountLabel,
   colors: colorsOverride,
+  variant = 'default',
 }: MultiSelectProps) {
   const theme = useAppTheme(colorsOverride);
   const [open, setOpen] = useState(false);
   const sheetTitle = title || label || placeholder;
+  const isCrystal = variant === 'crystal';
+  const triggerBg = isCrystal
+    ? colorsOverride?.card || 'rgba(255,255,255,0.72)'
+    : theme.card;
 
   const selectedLabels = useMemo(() => {
     const map = new Map(options.map(o => [o.value, o.label]));
@@ -81,9 +88,17 @@ export function MultiSelect({
       <TouchableOpacity
         style={[
           styles.trigger,
+          isCrystal && styles.triggerCrystal,
           {
-            borderColor: error ? theme.danger || '#FF3B30' : theme.border,
-            backgroundColor: theme.card,
+            borderWidth: isCrystal ? (error ? 1.5 : 0) : error ? 1.5 : 1,
+            borderColor: error
+              ? theme.danger || '#FF3B30'
+              : isCrystal
+                ? 'transparent'
+                : theme.border,
+            backgroundColor: triggerBg,
+            elevation: 0,
+            shadowOpacity: 0,
           },
           disabled && styles.disabled,
         ]}
@@ -218,6 +233,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    elevation: 0,
+  },
+  triggerCrystal: {
+    minHeight: 44,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    borderRadius: 16,
+    paddingVertical: 11,
+    elevation: 0,
   },
   triggerText: {fontSize: 15, flex: 1, paddingRight: 8},
   chevron: {fontSize: 14},

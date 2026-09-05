@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, StyleSheet, type StyleProp, type ViewStyle, type TextStyle} from 'react-native';
 import {useAppTheme, type AppThemeColors} from './theme';
+import {HS} from './tokens';
 
 export type StatusChipTone =
   | 'pending'
@@ -82,14 +83,35 @@ export function StatusChip({
   const accent =
     custom ||
     (tone === 'pending' || tone === 'warning'
-      ? theme.warning || '#FF9500'
+      ? HS.statusPendingFg
       : tone === 'completed' || tone === 'success'
-        ? theme.success || '#34C759'
+        ? HS.success
         : tone === 'cancelled' || tone === 'error'
-          ? theme.danger || '#FF3B30'
+          ? HS.error
           : tone === 'neutral'
-            ? '#4A5568'
-            : theme.primary);
+            ? HS.statusNeutralFg
+            : theme.primary || HS.primary);
+
+  const bg =
+    tone === 'pending' || tone === 'warning'
+      ? HS.mixPending14
+      : tone === 'completed' || tone === 'success'
+        ? HS.mixOk14
+        : tone === 'cancelled' || tone === 'error'
+          ? HS.mixErr14
+          : tone === 'neutral'
+            ? HS.statusNeutralBg
+            : HS.mixActive14;
+  const border =
+    tone === 'pending' || tone === 'warning'
+      ? HS.mixPending35
+      : tone === 'completed' || tone === 'success'
+        ? HS.mixOk35
+        : tone === 'cancelled' || tone === 'error'
+          ? HS.mixErr35
+          : tone === 'neutral'
+            ? HS.border
+            : HS.mixActive35;
 
   return (
     <Text
@@ -97,8 +119,8 @@ export function StatusChip({
         styles.chip,
         {
           color: accent,
-          backgroundColor: `${accent}22`,
-          borderColor: `${accent}55`,
+          backgroundColor: custom ? `${accent}22` : bg,
+          borderColor: custom ? `${accent}55` : border,
         },
         style,
         textStyle,
