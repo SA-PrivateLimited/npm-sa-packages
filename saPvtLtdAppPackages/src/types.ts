@@ -1,4 +1,4 @@
-/** Shared Akanso domain types — RN-safe, no DOM. Backend remains source of truth. */
+/** Shared Akansho domain types — RN-safe, no DOM. Backend remains source of truth. */
 
 export type UserRole = 'customer' | 'provider' | 'admin';
 

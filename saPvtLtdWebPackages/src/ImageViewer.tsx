@@ -99,7 +99,7 @@ export function ImageViewer({
   style,
   testId = 'hs-image-viewer',
   brandMarkSrc = '/logo.png',
-  brandMarkLabel = 'Akanso',
+  brandMarkLabel = 'Akansho',
 }: ImageViewerProps) {
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
