@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,21 @@ import {
   Modal,
   FlatList,
   StyleSheet,
+  TextInput,
   type ViewStyle,
 } from 'react-native';
 import {useAppTheme, type AppThemeColors} from './theme';
+import {
+  SELECT_SEARCH_DEBOUNCE_MS,
+  filterSelectOptions,
+} from './filterSelectOptions';
 
 export interface SelectOption {
   value: string;
   label: string;
   disabled?: boolean;
+  /** Optional extra searchable text (aliases). */
+  searchText?: string;
 }
 
 export interface SelectProps {
@@ -40,6 +47,10 @@ export interface SelectProps {
   /** Show × when a value is selected (web SingleSelect allowClear). */
   allowClear?: boolean;
   clearAriaLabel?: string;
+  /** Show a searchable field at the top of the options sheet. */
+  showSearch?: boolean;
+  searchPlaceholder?: string;
+  emptySearchText?: string;
 }
 
 export function Select({
@@ -58,9 +69,14 @@ export function Select({
   variant = 'default',
   allowClear,
   clearAriaLabel = 'Clear',
+  showSearch = false,
+  searchPlaceholder = 'Search…',
+  emptySearchText = 'No results found',
 }: SelectProps) {
   const theme = useAppTheme(colorsOverride);
   const [open, setOpen] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const selected = options.find(o => o.value === value);
   const sheetTitle = title || label || placeholder;
   const isCrystal = variant === 'crystal';
@@ -76,6 +92,29 @@ export function Select({
   // Web: allowClear defaults on when a placeholder exists.
   const canClear =
     (allowClear ?? Boolean(placeholder)) && Boolean(value) && !disabled;
+
+  useEffect(() => {
+    if (!open) {
+      setSearchText('');
+      setDebouncedQuery('');
+      return;
+    }
+    const handle = setTimeout(() => {
+      setDebouncedQuery(searchText);
+    }, SELECT_SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+  }, [searchText, open]);
+
+  const visibleOptions = useMemo(() => {
+    if (!showSearch) return options;
+    return filterSelectOptions(options, debouncedQuery);
+  }, [options, showSearch, debouncedQuery]);
+
+  const closeSheet = () => {
+    setOpen(false);
+    setSearchText('');
+    setDebouncedQuery('');
+  };
 
   return (
     <View style={[styles.wrap, style]} testID={testID}>
@@ -148,15 +187,22 @@ export function Select({
         transparent
         animationType="slide"
         statusBarTranslucent
-        onRequestClose={() => setOpen(false)}>
+        onRequestClose={closeSheet}>
         <View style={styles.overlay}>
           <Pressable
             style={StyleSheet.absoluteFillObject}
-            onPress={() => setOpen(false)}
+            onPress={closeSheet}
             accessibilityRole="button"
             accessibilityLabel="Close"
           />
-          <View style={[styles.panel, {backgroundColor: panelBg}]}>
+          <View
+            style={[
+              styles.panel,
+              {backgroundColor: panelBg},
+              // Searchable geography selectors keep a stable sheet height so
+              // result count (0 / 1 / many) never shrinks or grows the panel.
+              showSearch ? styles.panelFixed : null,
+            ]}>
             <View style={styles.handleRow}>
               <View
                 style={[styles.handle, {backgroundColor: theme.border}]}
@@ -165,10 +211,60 @@ export function Select({
             <Text style={[styles.panelTitle, {color: theme.text}]}>
               {sheetTitle}
             </Text>
+            {showSearch ? (
+              <View
+                style={[
+                  styles.searchWrap,
+                  {
+                    borderColor: theme.border,
+                    backgroundColor: theme.background,
+                  },
+                ]}>
+                <Text style={[styles.searchIcon, {color: theme.textSecondary}]}>
+                  🔍
+                </Text>
+                <TextInput
+                  value={searchText}
+                  onChangeText={setSearchText}
+                  placeholder={searchPlaceholder}
+                  placeholderTextColor={theme.textSecondary}
+                  style={[styles.searchInput, {color: theme.text}]}
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  clearButtonMode="never"
+                  accessibilityLabel={searchPlaceholder}
+                  accessibilityRole="search"
+                />
+                {searchText ? (
+                  <TouchableOpacity
+                    onPress={() => setSearchText('')}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityLabel="Clear search">
+                    <Text
+                      style={[styles.searchClear, {color: theme.textSecondary}]}>
+                      ×
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            ) : null}
             <FlatList
-              data={options}
+              data={visibleOptions}
               keyExtractor={item => item.value}
               keyboardShouldPersistTaps="handled"
+              style={showSearch ? styles.optionListFixed : undefined}
+              contentContainerStyle={
+                showSearch && visibleOptions.length === 0
+                  ? styles.optionListEmptyContent
+                  : undefined
+              }
+              ListEmptyComponent={
+                <Text
+                  style={[styles.emptyText, {color: theme.textSecondary}]}>
+                  {emptySearchText}
+                </Text>
+              }
               renderItem={({item}) => {
                 const active = item.value === value;
                 return (
@@ -184,10 +280,13 @@ export function Select({
                       onChange(item.value);
                       // Defer close so the same touch cannot fall through to
                       // views under the Modal (e.g. browse location "Done").
-                      requestAnimationFrame(() => setOpen(false));
+                      requestAnimationFrame(() => closeSheet());
                     }}
                     accessibilityRole="button"
-                    accessibilityState={{selected: active, disabled: !!item.disabled}}>
+                    accessibilityState={{
+                      selected: active,
+                      disabled: !!item.disabled,
+                    }}>
                     <Text
                       style={[
                         styles.optionText,
@@ -200,7 +299,9 @@ export function Select({
                       {item.label}
                     </Text>
                     {active ? (
-                      <Text style={[styles.check, {color: theme.primary}]}>✓</Text>
+                      <Text style={[styles.check, {color: theme.primary}]}>
+                        ✓
+                      </Text>
                     ) : null}
                   </TouchableOpacity>
                 );
@@ -270,7 +371,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   panel: {
-    maxHeight: '65%',
+    maxHeight: '72%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingBottom: 28,
@@ -279,6 +380,18 @@ const styles = StyleSheet.create({
     shadowRadius: 22,
     shadowOffset: {width: 0, height: -4},
     elevation: 24,
+  },
+  panelFixed: {
+    height: '72%',
+    maxHeight: '72%',
+  },
+  optionListFixed: {
+    flex: 1,
+    minHeight: 0,
+  },
+  optionListEmptyContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   handleRow: {
     alignItems: 'center',
@@ -294,7 +407,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
+  },
+  searchWrap: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    minHeight: 44,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  searchIcon: {fontSize: 14},
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    paddingVertical: 8,
+    minHeight: 40,
+  },
+  searchClear: {
+    fontSize: 20,
+    fontWeight: '600',
+    paddingHorizontal: 4,
+  },
+  emptyText: {
+    textAlign: 'center',
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+    fontSize: 14,
+    lineHeight: 20,
   },
   option: {
     paddingHorizontal: 16,

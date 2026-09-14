@@ -42,6 +42,10 @@ export type {BannerProps, BannerVariant} from './Banner';
 
 export {Select} from './Select';
 export type {SelectProps, SelectOption} from './Select';
+export {
+  filterSelectOptions,
+  SELECT_SEARCH_DEBOUNCE_MS,
+} from './filterSelectOptions';
 /** Alias for clarity alongside MultiSelect */
 export {Select as SingleSelect} from './Select';
 /** Alias — Dropdown is Select */

@@ -71,17 +71,21 @@ export function AlertModal({
             </Text>
           </View>
 
-          <View style={styles.contentContainer}>
-            <Text style={[styles.messageText, {color: theme.textSecondary}]}>
-              {message}
-            </Text>
-          </View>
+          {message ? (
+            <View style={styles.contentContainer}>
+              <Text style={[styles.messageText, {color: theme.textSecondary}]}>
+                {message}
+              </Text>
+            </View>
+          ) : null}
 
           <TouchableOpacity
             style={[styles.button, {backgroundColor: accent}]}
             onPress={onClose}
-            activeOpacity={0.8}>
-            <Text style={styles.buttonText}>{buttonText.toUpperCase()}</Text>
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={buttonText}>
+            <Text style={styles.buttonText}>{buttonText}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -90,7 +94,7 @@ export function AlertModal({
 }
 
 const {width} = Dimensions.get('window');
-const modalWidth = width * 0.85;
+const modalWidth = Math.min(width * 0.86, 360);
 
 const styles = StyleSheet.create({
   overlay: {
@@ -98,61 +102,64 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 24,
   },
   modalContainer: {
     width: modalWidth,
-    maxWidth: 400,
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: 16,
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: 16,
     elevation: 10,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
   },
   headerContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   iconContainer: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   iconGlyph: {
-    fontSize: 32,
+    fontSize: 20,
     fontWeight: '700',
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '700',
     textAlign: 'center',
+    lineHeight: 24,
   },
   contentContainer: {
-    marginBottom: 24,
+    marginBottom: 16,
     alignItems: 'center',
   },
   messageText: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 20,
   },
   button: {
     width: '100%',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
+    minHeight: 44,
+    paddingVertical: 11,
+    paddingHorizontal: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
-    letterSpacing: 0.5,
   },
 });
 
