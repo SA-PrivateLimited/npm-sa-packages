@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import {useAppTheme, type AppThemeColors} from './theme';
+import {Icon} from './Icon';
 
 export type ConfirmationModalType = 'danger' | 'warning' | 'info' | 'success';
 
@@ -20,6 +21,7 @@ export interface ConfirmationModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   type?: ConfirmationModalType;
+  /** Single character (e.g. "!") or Material icon name (e.g. "refresh"). */
   iconGlyph?: string;
   colors?: Partial<AppThemeColors>;
 }
@@ -30,6 +32,31 @@ const TYPE_GLYPH: Record<ConfirmationModalType, string> = {
   success: '✓',
   info: 'i',
 };
+
+const ICON_NAME_ALIASES: Record<string, string> = {
+  refresh: 'refresh',
+  'checkmark-circle': 'check-circle',
+  checkmark_circle: 'check-circle',
+  'check-circle': 'check-circle',
+  'search-outline': 'search',
+  search_outline: 'search',
+  warning: 'warning',
+  info: 'info',
+};
+
+/** Named Material icons are multi-char words; type glyphs are 1 char. */
+function resolveIconName(raw?: string): string | null {
+  const value = String(raw || '').trim();
+  if (!value) return null;
+  if (value.length <= 2) return null;
+  const aliased =
+    ICON_NAME_ALIASES[value] || ICON_NAME_ALIASES[value.toLowerCase()];
+  if (aliased) return aliased;
+  if (/^[a-zA-Z][a-zA-Z0-9_-]+$/.test(value)) {
+    return value.replace(/_/g, '-');
+  }
+  return null;
+}
 
 export function ConfirmationModal({
   visible,
@@ -54,7 +81,8 @@ export function ConfirmationModal({
           ? theme.success || '#34C759'
           : theme.primary;
 
-  const glyph = iconGlyph || TYPE_GLYPH[type];
+  const iconName = resolveIconName(iconGlyph);
+  const glyph = iconName ? null : iconGlyph || TYPE_GLYPH[type];
 
   return (
     <Modal
@@ -67,7 +95,11 @@ export function ConfirmationModal({
           <View style={styles.headerContainer}>
             <View
               style={[styles.iconContainer, {backgroundColor: `${accent}18`}]}>
-              <Text style={[styles.iconGlyph, {color: accent}]}>{glyph}</Text>
+              {iconName ? (
+                <Icon name={iconName} size={24} color={accent} />
+              ) : (
+                <Text style={[styles.iconGlyph, {color: accent}]}>{glyph}</Text>
+              )}
             </View>
             <Text style={[styles.headerTitle, {color: theme.text}]}>
               {title}

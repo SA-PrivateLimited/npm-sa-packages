@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -30,6 +31,14 @@ export interface ButtonProps {
   colors?: Partial<AppThemeColors>;
   testID?: string;
   testId?: string;
+}
+
+function rippleColor(variant: ButtonVariant): string {
+  // Light ink on filled CTAs; soft dark ink on outlined / ghost.
+  if (variant === 'primary' || variant === 'danger') {
+    return 'rgba(255, 255, 255, 0.28)';
+  }
+  return 'rgba(15, 28, 46, 0.12)';
 }
 
 export function Button({
@@ -88,7 +97,15 @@ export function Button({
       testID={testID || testId || 'hs-button'}
       disabled={isDisabled}
       onPress={press}
-      style={() => [
+      android_ripple={
+        !isDisabled
+          ? {
+              color: rippleColor(variant),
+              borderless: false,
+            }
+          : undefined
+      }
+      style={({pressed}) => [
         styles.base,
         {
           backgroundColor: bg,
@@ -96,7 +113,11 @@ export function Button({
           minHeight,
           paddingHorizontal: padH,
           borderRadius: metrics.radiusSm,
-          opacity: isDisabled ? 0.5 : 1,
+          opacity: isDisabled
+            ? 0.5
+            : Platform.OS !== 'android' && pressed
+              ? 0.82
+              : 1,
           alignSelf: block ? 'stretch' : 'flex-start',
           width: block ? '100%' : undefined,
         },
@@ -122,6 +143,7 @@ const styles = StyleSheet.create({
     gap: 6,
     borderWidth: 1,
     borderRadius: HS.radiusSm,
+    overflow: 'hidden', // clip Android ripple to rounded corners
   },
   label: {
     fontWeight: '600',
