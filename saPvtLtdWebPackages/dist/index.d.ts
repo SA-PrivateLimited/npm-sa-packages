@@ -66,5 +66,9 @@ export { EmptyState, ErrorState } from './EmptyState.js';
 export type { EmptyStateProps, ErrorStateProps } from './EmptyState.js';
 export { Card } from './Card.js';
 export type { CardProps, CardPadding } from './Card.js';
+export { GlassTabBar } from './FloatingTabBar.js';
+export type { GlassTabBarProps } from './FloatingTabBar.js';
+export { glassTabMetrics, glassPillXForIndex, glassPillIndexForX, clampGlassPillX, } from './glassTabMetrics.js';
+export type { GlassTabMetrics } from './glassTabMetrics.js';
 export { digitsOnly, localTenDigits, toE164, formatPhoneDisplay, INDIA_DIAL_CODE, } from './phone.js';
 //# sourceMappingURL=index.d.ts.map
