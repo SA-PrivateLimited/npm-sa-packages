@@ -6,7 +6,7 @@ export interface CardProps {
     style?: CSSProperties;
     /** Padding scale. Default `md` (16px). */
     padding?: CardPadding;
-    /** Hover elevation for clickable surfaces. */
+    /** Hover elevation for clickable surfaces. Also implied by `onClick` / `as="button"` / `as="a"`. */
     interactive?: boolean;
     /** Soft border (default true). */
     bordered?: boolean;

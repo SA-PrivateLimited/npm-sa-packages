@@ -47,6 +47,8 @@ export interface IconProps {
   size?: number | string;
 }
 
+const DIRECTIONAL_ARROWS = new Set(['chevron_right', 'arrow_forward', 'east']);
+
 export function Icon({
   name,
   className = '',
@@ -57,10 +59,14 @@ export function Icon({
   size = 20,
 }: IconProps) {
   const fontSize = typeof size === 'number' ? `${size}px` : size;
+  const clickArrow =
+    DIRECTIONAL_ARROWS.has(name) && !className.includes('hs-click-arrow')
+      ? 'hs-click-arrow'
+      : '';
 
   return (
     <span
-      className={`material-symbols-outlined hs-icon ${className}`.trim()}
+      className={`material-symbols-outlined hs-icon ${clickArrow} ${className}`.trim()}
       style={{
         fontSize,
         fontFamily: "'Material Symbols Outlined', sans-serif",
@@ -71,7 +77,8 @@ export function Icon({
       }}
       aria-hidden={label ? undefined : true}
       aria-label={label}
-      role={label ? 'img' : undefined}>
+      role={label ? 'img' : undefined}
+      data-icon={name}>
       {name}
     </span>
   );

@@ -37,7 +37,12 @@ export type {
 export {VirtualTable as Table} from './VirtualTable.js';
 
 export {Button} from './Button.js';
-export type {ButtonProps, ButtonVariant, ButtonSize} from './Button.js';
+export type {
+  ButtonProps,
+  ButtonVariant,
+  ButtonSize,
+  ButtonArrow,
+} from './Button.js';
 
 export {Input} from './Input.js';
 export type {InputProps} from './Input.js';

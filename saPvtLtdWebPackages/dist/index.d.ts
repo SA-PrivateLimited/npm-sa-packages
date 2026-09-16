@@ -19,7 +19,7 @@ export type { VirtualTableProps, VirtualTableColumn, VirtualTableRowSelection, V
 /** Alias — Table is VirtualTable */
 export { VirtualTable as Table } from './VirtualTable.js';
 export { Button } from './Button.js';
-export type { ButtonProps, ButtonVariant, ButtonSize } from './Button.js';
+export type { ButtonProps, ButtonVariant, ButtonSize, ButtonArrow, } from './Button.js';
 export { Input } from './Input.js';
 export type { InputProps } from './Input.js';
 export { OtpInput } from './OtpInput.js';

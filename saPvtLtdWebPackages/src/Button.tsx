@@ -1,7 +1,9 @@
 import type {ButtonHTMLAttributes, CSSProperties, ReactNode} from 'react';
+import {Icon} from './Icon.js';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonArrow = boolean | 'chevron_right' | 'arrow_forward';
 
 export interface ButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
@@ -9,6 +11,8 @@ export interface ButtonProps
   size?: ButtonSize;
   loading?: boolean;
   block?: boolean;
+  /** Trailing directional arrow for navigation CTAs. Off by default. */
+  arrow?: ButtonArrow;
   children?: ReactNode;
   className?: string;
   style?: CSSProperties;
@@ -20,6 +24,7 @@ export function Button({
   size = 'md',
   loading = false,
   block = false,
+  arrow = false,
   disabled,
   children,
   className = '',
@@ -38,6 +43,8 @@ export function Button({
   ]
     .filter(Boolean)
     .join(' ');
+  const arrowName = arrow === true ? 'arrow_forward' : arrow || null;
+  const arrowSize = size === 'sm' ? 16 : 18;
 
   return (
     <button
@@ -49,7 +56,10 @@ export function Button({
       aria-busy={loading || undefined}
       {...rest}>
       {loading ? <span className="hs-btn__spinner" aria-hidden /> : null}
-      <span className="hs-btn__label">{children}</span>
+      <span className="hs-btn__label">
+        {children}
+        {arrowName ? <Icon name={arrowName} size={arrowSize} /> : null}
+      </span>
     </button>
   );
 }
