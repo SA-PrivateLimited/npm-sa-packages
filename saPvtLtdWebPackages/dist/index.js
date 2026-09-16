@@ -34,4 +34,6 @@ export { DocumentViewer } from './DocumentViewer.js';
 export { ImageViewer } from './ImageViewer.js';
 export { EmptyState, ErrorState } from './EmptyState.js';
 export { Card } from './Card.js';
+export { GlassTabBar } from './FloatingTabBar.js';
+export { glassTabMetrics, glassPillXForIndex, glassPillIndexForX, clampGlassPillX, } from './glassTabMetrics.js';
 export { digitsOnly, localTenDigits, toE164, formatPhoneDisplay, INDIA_DIAL_CODE, } from './phone.js';
