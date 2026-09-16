@@ -78,8 +78,7 @@ export function Icon({
       aria-hidden={label ? undefined : true}
       aria-label={label}
       role={label ? 'img' : undefined}
-      data-icon={name}>
-      {name}
-    </span>
+      data-icon={name}
+    />
   );
 }
