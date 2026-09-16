@@ -12,5 +12,5 @@ export function Icon({ name, className = '', style, label, filled = false, weigh
             WebkitFontFeatureSettings: "'liga'",
             fontFeatureSettings: "'liga'",
             ...style,
-        }, "aria-hidden": label ? undefined : true, "aria-label": label, role: label ? 'img' : undefined, "data-icon": name, children: name }));
+        }, "aria-hidden": label ? undefined : true, "aria-label": label, role: label ? 'img' : undefined, children: name }));
 }

@@ -2323,24 +2323,6 @@ textarea.hs-input {
   opacity: 0;
   pointer-events: none;
 }
-
-/* Keep ligatures out of crawlable/accessible text nodes. */
-.hs-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  speak: never;
-  line-height: 1;
-}
-
-.hs-icon::before {
-  content: attr(data-icon);
-  font-family: inherit;
-  font-variation-settings: inherit;
-  font-weight: inherit;
-  font-size: inherit;
-  line-height: 1;
-}
 /* Shared clickable interaction — cursor, arrow shift, lift, press, focus.
  * Apps: add `.hs-clickable` (cards/rows) or `.hs-clickable-btn` (CTAs).
  * Directional icons (`chevron_right`, `arrow_forward`, `east`) get `.hs-click-arrow`.
