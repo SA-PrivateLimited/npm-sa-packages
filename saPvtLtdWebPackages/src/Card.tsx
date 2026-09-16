@@ -8,7 +8,7 @@ export interface CardProps {
   style?: CSSProperties;
   /** Padding scale. Default `md` (16px). */
   padding?: CardPadding;
-  /** Hover elevation for clickable surfaces. */
+  /** Hover elevation for clickable surfaces. Also implied by `onClick` / `as="button"` / `as="a"`. */
   interactive?: boolean;
   /** Soft border (default true). */
   bordered?: boolean;
@@ -32,11 +32,16 @@ export function Card({
   onClick,
   testId = 'hs-card',
 }: CardProps) {
+  const isInteractive =
+    interactive ||
+    Boolean(onClick) ||
+    Comp === 'button' ||
+    Comp === 'a';
   const classes = [
     'hs-card',
     `hs-card--pad-${padding}`,
     bordered ? 'hs-card--bordered' : '',
-    interactive ? 'hs-card--interactive' : '',
+    isInteractive ? 'hs-card--interactive' : '',
     className,
   ]
     .filter(Boolean)

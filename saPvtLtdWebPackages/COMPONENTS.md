@@ -26,7 +26,8 @@ import { Icon } from 'sapvt-ltd-web-packages';
 |-----------|--------|--------|
 | Icon | `Icon` | Material Symbols ligature wrapper |
 | Banner | `Banner` | Uses `Icon` `close` |
-| Button | `Button` | primary / secondary / ghost / danger |
+| Button | `Button` | primary / secondary / ghost / danger. Optional `arrow` for navigation CTAs. |
+| Card | `Card` | Surface; auto-`interactive` when `onClick` or `as` is `button`/`a` |
 | Input | `Input` | label, error, prefix/suffix, multiline |
 | OTP Input | `OtpInput` | digit boxes, paste, onComplete |
 | Phone Input | `PhoneInput` | +91 + 10 digits |
@@ -56,9 +57,21 @@ import { Icon } from 'sapvt-ltd-web-packages';
 | Tree MultiSelect | `TreeMultiSelect` | checkable tree |
 | Widget | `Widget` | card shell |
 
+## Clickable interaction
+
+Global hover/press lives in `clickable.css` (concatenated into `styles.css`).
+
+- Add `hs-clickable` to a whole clickable card/row, or `hs-clickable-btn` to a local CTA.
+- Directional icons (`chevron_right`, `arrow_forward`, `east`) animate 5px right on hover.
+- Do not add arrows to filters, chrome icon buttons, or form controls.
+- `:hover` is gated with `(hover: hover) and (pointer: fine)`. Touch uses a brief `:active` scale.
+- `prefers-reduced-motion: reduce` disables transforms.
+
 ## Theme tokens
 
 `--hs-primary`, `--hs-primary-dark`, `--hs-secondary`, `--hs-surface`, `--hs-text`, `--hs-text-secondary`, `--hs-border`, `--hs-error`, `--hs-success`, `--hs-warning`, `--hs-background`
+
+Clickable: `--hs-click-duration`, `--hs-click-ease`, `--hs-click-arrow-shift`, `--hs-click-btn-lift`, `--hs-click-card-lift`
 
 ## Peers
 

@@ -4,11 +4,15 @@ import { jsx as _jsx } from "react/jsx-runtime";
  * Prefer `Widget` when you need a titled header + body + footer shell.
  */
 export function Card({ children, className = '', style, padding = 'md', interactive = false, bordered = true, as: Comp = 'div', onClick, testId = 'hs-card', }) {
+    const isInteractive = interactive ||
+        Boolean(onClick) ||
+        Comp === 'button' ||
+        Comp === 'a';
     const classes = [
         'hs-card',
         `hs-card--pad-${padding}`,
         bordered ? 'hs-card--bordered' : '',
-        interactive ? 'hs-card--interactive' : '',
+        isInteractive ? 'hs-card--interactive' : '',
         className,
     ]
         .filter(Boolean)

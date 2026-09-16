@@ -1,4 +1,5 @@
 /* sapvt-ltd-web-packages — base styles (import via `sapvt-ltd-web-packages/styles.css`) */
+/* clickable.css is concatenated after this file by `npm run build`. */
 
 /*
  * Density / spacing scale (4px base)
@@ -712,18 +713,13 @@ button.hs-chip {
 .hs-card--interactive {
   cursor: pointer;
   transition:
-    box-shadow 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.15s ease;
+    box-shadow var(--hs-click-duration, 180ms) var(--hs-click-ease, ease-out),
+    border-color var(--hs-click-duration, 180ms) var(--hs-click-ease, ease-out),
+    transform var(--hs-click-duration, 180ms) var(--hs-click-ease, ease-out);
 }
 
 .hs-card--interactive:hover {
   border-color: color-mix(in srgb, var(--hs-primary, #3182ce) 35%, var(--hs-border, #e2e8f0));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.hs-card--interactive:active {
-  transform: scale(0.997);
 }
 
 button.hs-card {
@@ -2326,4 +2322,22 @@ textarea.hs-input {
   border: 0;
   opacity: 0;
   pointer-events: none;
+}
+
+/* Keep ligatures out of crawlable/accessible text nodes. */
+.hs-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  speak: never;
+  line-height: 1;
+}
+
+.hs-icon::before {
+  content: attr(data-icon);
+  font-family: inherit;
+  font-variation-settings: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: 1;
 }
