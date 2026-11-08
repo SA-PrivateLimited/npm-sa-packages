@@ -37,6 +37,10 @@ export interface SelectProps {
   searchPlaceholder?: string;
   /** Shown when search/filter yields no options. */
   emptyMessage?: string;
+  /** When search has no exact match, let the user pick the typed value. */
+  allowCreate?: boolean;
+  /** Use `{{query}}` for the typed text. */
+  createLabel?: string;
   /** Accessible label for the clear control. */
   clearAriaLabel?: string;
   /** Kept for Ant API compat; ignored by custom dropdown. */
@@ -61,6 +65,8 @@ export function Select({
   showSearch = false,
   searchPlaceholder = 'Search…',
   emptyMessage = 'No options',
+  allowCreate = false,
+  createLabel = 'Use “{{query}}”',
   clearAriaLabel = 'Clear',
   style,
 }: SelectProps) {
@@ -121,6 +127,16 @@ export function Select({
     });
   }, [options, query]);
 
+  const createQuery = query.trim();
+  const canCreate = useMemo(() => {
+    if (!allowCreate || createQuery.length < 2) return false;
+    const folded = createQuery.toLowerCase();
+    return !options.some(
+      (o) =>
+        o.value.toLowerCase() === folded || o.label.toLowerCase() === folded,
+    );
+  }, [allowCreate, createQuery, options]);
+
   const close = useCallback(() => {
     setOpen(false);
     setQuery('');
@@ -169,7 +185,26 @@ export function Select({
             </div>
           ) : null}
           <ul className="hs-dd__list">
-            {filtered.length === 0 ? (
+            {canCreate ? (
+              <li>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={value === createQuery}
+                  className={`hs-dd__option${
+                    value === createQuery ? ' is-active' : ''
+                  }`}
+                  onClick={() => {
+                    onChange(createQuery);
+                    close();
+                  }}>
+                  <span>
+                    {createLabel.replace(/\{\{\s*query\s*\}\}/gi, createQuery)}
+                  </span>
+                </button>
+              </li>
+            ) : null}
+            {filtered.length === 0 && !canCreate ? (
               <li className="hs-dd__empty">{emptyMessage}</li>
             ) : (
               filtered.map((opt) => {
@@ -246,9 +281,11 @@ export function Select({
           onKeyDown={onTriggerKey}>
           <span
             className={
-              selected ? 'hs-dd__value' : 'hs-dd__value hs-dd__placeholder'
+              selected || value
+                ? 'hs-dd__value'
+                : 'hs-dd__value hs-dd__placeholder'
             }>
-            {selected?.label || placeholder}
+            {selected?.label || value || placeholder}
           </span>
           <span className="hs-dd__actions">
             {canClear && value ? (

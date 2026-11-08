@@ -21,6 +21,10 @@ export interface SelectProps {
     searchPlaceholder?: string;
     /** Shown when search/filter yields no options. */
     emptyMessage?: string;
+    /** When search has no exact match, let the user pick the typed value. */
+    allowCreate?: boolean;
+    /** Use `{{query}}` for the typed text. */
+    createLabel?: string;
     /** Accessible label for the clear control. */
     clearAriaLabel?: string;
     /** Kept for Ant API compat; ignored by custom dropdown. */
@@ -31,7 +35,7 @@ export interface SelectProps {
  * Custom single-select dropdown (no Ant Design).
  * Mobile: full-width bottom sheet. Desktop: anchored list.
  */
-export declare function Select({ label, options, value, onChange, placeholder, disabled, className, id, allowClear, showSearch, searchPlaceholder, emptyMessage, clearAriaLabel, style, }: SelectProps): import("react").JSX.Element;
+export declare function Select({ label, options, value, onChange, placeholder, disabled, className, id, allowClear, showSearch, searchPlaceholder, emptyMessage, allowCreate, createLabel, clearAriaLabel, style, }: SelectProps): import("react").JSX.Element;
 /** Alias — prefer this name in new code for clarity. */
 export declare const SingleSelect: typeof Select;
 //# sourceMappingURL=Select.d.ts.map

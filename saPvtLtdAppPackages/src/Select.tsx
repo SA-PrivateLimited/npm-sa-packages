@@ -14,6 +14,7 @@ import {useAppTheme, type AppThemeColors} from './theme';
 import {
   SELECT_SEARCH_DEBOUNCE_MS,
   filterSelectOptions,
+  foldSelectQuery,
 } from './filterSelectOptions';
 
 export interface SelectOption {
@@ -42,8 +43,9 @@ export interface SelectProps {
   /**
    * `crystal` ≈ web `--crystal-control-bg` (soft wash, no blue border).
    * Use inside CrystalSurface / request forms.
+   * `outlined` matches bordered TextInputs (1px border, no shadow).
    */
-  variant?: 'default' | 'crystal';
+  variant?: 'default' | 'crystal' | 'outlined';
   /** Show × when a value is selected (web SingleSelect allowClear). */
   allowClear?: boolean;
   clearAriaLabel?: string;
@@ -51,6 +53,10 @@ export interface SelectProps {
   showSearch?: boolean;
   searchPlaceholder?: string;
   emptySearchText?: string;
+  /** When search has no exact match, let the user pick the typed value. */
+  allowCreate?: boolean;
+  /** Use `{{query}}` for the typed text. */
+  createLabel?: string;
 }
 
 export function Select({
@@ -72,6 +78,8 @@ export function Select({
   showSearch = false,
   searchPlaceholder = 'Search…',
   emptySearchText = 'No results found',
+  allowCreate = false,
+  createLabel = 'Use “{{query}}”',
 }: SelectProps) {
   const theme = useAppTheme(colorsOverride);
   const [open, setOpen] = useState(false);
@@ -80,6 +88,7 @@ export function Select({
   const selected = options.find(o => o.value === value);
   const sheetTitle = title || label || placeholder;
   const isCrystal = variant === 'crystal';
+  const isOutlined = variant === 'outlined';
   // Prefer caller override; default crystal wash ≈ web --crystal-control-bg
   const triggerBg = isCrystal
     ? colorsOverride?.card || 'rgba(255,255,255,0.72)'
@@ -110,6 +119,28 @@ export function Select({
     return filterSelectOptions(options, debouncedQuery);
   }, [options, showSearch, debouncedQuery]);
 
+  const sheetOptions = useMemo(() => {
+    if (!allowCreate) return visibleOptions;
+    const q = debouncedQuery.trim();
+    if (q.length < 2) return visibleOptions;
+    const folded = foldSelectQuery(q);
+    const exists = options.some(
+      o =>
+        foldSelectQuery(o.value) === folded ||
+        foldSelectQuery(o.label) === folded,
+    );
+    if (exists) return visibleOptions;
+    return [
+      {
+        value: q,
+        label: createLabel.replace(/\{\{\s*query\s*\}\}/gi, q),
+      },
+      ...visibleOptions,
+    ];
+  }, [allowCreate, createLabel, debouncedQuery, options, visibleOptions]);
+
+  const triggerLabel = selected?.label || (value ? value : '');
+
   const closeSheet = () => {
     setOpen(false);
     setSearchText('');
@@ -117,7 +148,9 @@ export function Select({
   };
 
   return (
-    <View style={[styles.wrap, style]} testID={testID}>
+    <View
+      style={[styles.wrap, isOutlined && styles.wrapOutlined, style]}
+      testID={testID}>
       {label ? (
         <Text style={[styles.label, {color: theme.textSecondary}]}>{label}</Text>
       ) : null}
@@ -125,14 +158,22 @@ export function Select({
         style={[
           styles.trigger,
           isCrystal && styles.triggerCrystal,
+          isOutlined && styles.triggerOutlined,
           {
-            borderWidth: error ? 1.5 : 0,
-            borderColor: error ? theme.danger || '#FF3B30' : 'transparent',
+            borderWidth: error ? 1.5 : isOutlined ? 1 : 0,
+            borderColor: error
+              ? theme.danger || '#FF3B30'
+              : isOutlined
+                ? theme.border || '#E2E8F0'
+                : 'transparent',
             backgroundColor: triggerBg,
             shadowColor: '#1e3c5a',
-            shadowOpacity: isCrystal ? 0 : 0.06,
-            shadowRadius: isCrystal ? 0 : 10,
-            shadowOffset: {width: 0, height: isCrystal ? 0 : 2},
+            shadowOpacity: isCrystal || isOutlined ? 0 : 0.06,
+            shadowRadius: isCrystal || isOutlined ? 0 : 10,
+            shadowOffset: {
+              width: 0,
+              height: isCrystal || isOutlined ? 0 : 2,
+            },
             elevation: 0,
           },
           disabled && styles.disabled,
@@ -146,10 +187,10 @@ export function Select({
           <Text
             style={[
               styles.triggerText,
-              {color: selected ? theme.text : theme.textSecondary},
+              {color: triggerLabel ? theme.text : theme.textSecondary},
             ]}
             numberOfLines={2}>
-            {selected?.label || placeholder}
+            {triggerLabel || placeholder}
           </Text>
         </TouchableOpacity>
         {canClear ? (
@@ -250,12 +291,12 @@ export function Select({
               </View>
             ) : null}
             <FlatList
-              data={visibleOptions}
-              keyExtractor={item => item.value}
+              data={sheetOptions}
+              keyExtractor={item => `${item.value}::${item.label}`}
               keyboardShouldPersistTaps="handled"
               style={showSearch ? styles.optionListFixed : undefined}
               contentContainerStyle={
-                showSearch && visibleOptions.length === 0
+                showSearch && sheetOptions.length === 0
                   ? styles.optionListEmptyContent
                   : undefined
               }
@@ -316,6 +357,7 @@ export function Select({
 
 const styles = StyleSheet.create({
   wrap: {width: '100%', marginBottom: 12},
+  wrapOutlined: {marginBottom: 0},
   label: {
     fontSize: 12,
     fontWeight: '600',
@@ -340,6 +382,13 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     paddingHorizontal: 14,
     paddingVertical: 11,
+    elevation: 0,
+  },
+  triggerOutlined: {
+    minHeight: 44,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     elevation: 0,
   },
   triggerMain: {
