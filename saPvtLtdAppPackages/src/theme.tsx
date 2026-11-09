@@ -21,7 +21,7 @@ export interface AppThemeColors {
 export const DEFAULT_APP_THEME: AppThemeColors = {
   primary: '#3182CE',
   background: '#F7FAFC',
-  card: 'rgba(226, 232, 240, 0.22)',
+  card: '#FFFFFF',
   text: '#1A202C',
   textSecondary: '#718096',
   border: '#E2E8F0',

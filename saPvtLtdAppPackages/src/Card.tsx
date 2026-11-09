@@ -54,7 +54,7 @@ export function Card({
       borderWidth: bordered ? 1 : 0,
       borderRadius: metrics.radiusCard,
       padding: PAD[padding],
-      overflow: 'visible' as const,
+      overflow: 'hidden' as const,
       ...surfaceLiftStyle(fill),
     },
     style,

@@ -60,7 +60,16 @@ export function AlertModal({
       animationType="fade"
       onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={[styles.modalContainer, {backgroundColor: theme.card}]}>
+        <View
+          style={[
+            styles.modalContainer,
+            {
+              backgroundColor:
+                theme.background === '#0B1220' || theme.card === '#151E2E'
+                  ? '#151E2E'
+                  : '#FFFFFF',
+            },
+          ]}>
           <View style={styles.headerContainer}>
             <View
               style={[styles.iconContainer, {backgroundColor: `${accent}18`}]}>
@@ -110,7 +119,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 18,
     paddingBottom: 16,
-    elevation: 10,
+    elevation: 0,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.25,

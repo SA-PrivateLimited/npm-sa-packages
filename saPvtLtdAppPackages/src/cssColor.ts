@@ -78,6 +78,6 @@ export function surfaceLiftStyle(fill?: string): ViewStyle {
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: glass ? 0.1 : 0.08,
     shadowRadius: 14,
-    elevation: glass ? 0 : 3,
+    elevation: 0,
   };
 }

@@ -1676,6 +1676,43 @@ textarea.hs-input {
   color: var(--hs-text-secondary, #718096);
 }
 
+.hs-confirm__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.hs-confirm__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+}
+
+.hs-confirm__icon--danger {
+  background: color-mix(in srgb, var(--hs-error, #e53e3e) 18%, transparent);
+  color: var(--hs-error, #e53e3e);
+}
+
+.hs-confirm__icon--warning {
+  background: color-mix(in srgb, var(--hs-warning, #dd6b20) 18%, transparent);
+  color: var(--hs-warning, #dd6b20);
+}
+
+.hs-confirm__icon--success {
+  background: color-mix(in srgb, var(--hs-success, #38a169) 18%, transparent);
+  color: var(--hs-success, #38a169);
+}
+
+.hs-confirm__icon--info {
+  background: color-mix(in srgb, var(--hs-primary, #3182ce) 18%, transparent);
+  color: var(--hs-primary, #3182ce);
+}
+
 .hs-loader {
   display: inline-flex;
   flex-direction: column;
