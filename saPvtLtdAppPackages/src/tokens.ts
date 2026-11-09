@@ -22,7 +22,7 @@ export const HS = {
   text: '#1A202C',
   textSecondary: '#718096',
   border: '#E2E8F0',
-  surface: 'rgba(255,255,255,0.82)',
+  surface: 'rgba(226, 232, 240, 0.22)',
   mixPrimary12: '#E8F2FB',
   mixPrimary28: '#B6D4F1',
   mixSuccess12: '#E8F6EE',

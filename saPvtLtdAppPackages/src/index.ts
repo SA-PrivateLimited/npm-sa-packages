@@ -19,6 +19,14 @@ export type {ChipProps, ChipsProps, ChipVariant} from './Chip';
 
 export {Card} from './Card';
 export type {CardProps, CardPadding} from './Card';
+export {
+  matchingStroke,
+  isTranslucent,
+  colorAlpha,
+  parseCssColor,
+  formatCssColor,
+  surfaceLiftStyle,
+} from './cssColor';
 
 export {Widget} from './Widget';
 export type {WidgetProps} from './Widget';

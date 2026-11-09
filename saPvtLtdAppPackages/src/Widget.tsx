@@ -2,6 +2,7 @@ import React, {type ReactNode} from 'react';
 import {View, Text, StyleSheet, type StyleProp, type ViewStyle} from 'react-native';
 import {useAppTheme, type AppThemeColors} from './theme';
 import {HS} from './tokens';
+import {surfaceLiftStyle} from './cssColor';
 
 export interface WidgetProps {
   title?: ReactNode;
@@ -29,14 +30,18 @@ export function Widget({
   const theme = useAppTheme(colorsOverride);
   const pad = compact ? 12 : 16;
   const hasHeader = Boolean(title || subtitle || actions);
+  const fill = theme.card || HS.surface;
   return (
     <View
       testID={testID}
       style={[
         styles.shell,
         {
-          backgroundColor: theme.card || HS.surface,
-          borderColor: theme.border || HS.border,
+          backgroundColor: fill,
+          borderColor: fill,
+          borderWidth: 1,
+          overflow: 'visible',
+          ...surfaceLiftStyle(fill),
         },
         style,
       ]}>
@@ -89,12 +94,6 @@ const styles = StyleSheet.create({
   shell: {
     borderRadius: HS.radiusCard,
     borderWidth: 1,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 12,
-    shadowOffset: {width: 0, height: 4},
-    elevation: 2,
   },
   header: {
     flexDirection: 'row',

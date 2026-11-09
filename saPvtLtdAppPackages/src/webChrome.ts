@@ -4,8 +4,8 @@ import type {AppThemeColors} from './theme';
 /** Customer web `global.css` :root + AppShell tabbar / main padding. */
 export const CUSTOMER_WEB = {
   background: '#F8FAFC',
-  /** Web `--crystal-bg` (near-solid glass; RN has no CSS backdrop-filter). */
-  card: 'rgba(255,255,255,0.82)',
+  /** Light sky glass over the landscape backdrop. */
+  card: 'rgba(226, 232, 240, 0.22)',
   text: '#1A202C',
   textSecondary: '#718096',
   primary: '#3182CE',
@@ -53,7 +53,7 @@ export const CUSTOMER_WEB = {
 export const PROVIDER_WEB = {
   background: '#F5F7FA',
   /** Light sky glass over the landscape backdrop. */
-  card: 'rgba(214, 236, 250, 0.88)',
+  card: 'rgba(226, 232, 240, 0.22)',
   text: '#1A202C',
   textSecondary: '#718096',
   primary: '#34C759',
