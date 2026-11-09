@@ -691,7 +691,7 @@ button.hs-chip {
 }
 
 .hs-card--bordered {
-  border: 1px solid var(--hs-border, #e2e8f0);
+  border: 1px solid color-mix(in srgb, var(--hs-border, #e2e8f0) 28%, transparent);
 }
 
 .hs-card--pad-none {
@@ -734,7 +734,7 @@ button.hs-card {
   flex-direction: column;
   min-width: 0;
   background: var(--hs-surface, #fff);
-  border: 1px solid var(--hs-border, #e2e8f0);
+  border: 1px solid color-mix(in srgb, var(--hs-border, #e2e8f0) 28%, transparent);
   border-radius: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
   overflow: hidden;
@@ -1674,6 +1674,43 @@ textarea.hs-input {
   font-size: 15px;
   line-height: 1.45;
   color: var(--hs-text-secondary, #718096);
+}
+
+.hs-confirm__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.hs-confirm__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+}
+
+.hs-confirm__icon--danger {
+  background: color-mix(in srgb, var(--hs-error, #e53e3e) 18%, transparent);
+  color: var(--hs-error, #e53e3e);
+}
+
+.hs-confirm__icon--warning {
+  background: color-mix(in srgb, var(--hs-warning, #dd6b20) 18%, transparent);
+  color: var(--hs-warning, #dd6b20);
+}
+
+.hs-confirm__icon--success {
+  background: color-mix(in srgb, var(--hs-success, #38a169) 18%, transparent);
+  color: var(--hs-success, #38a169);
+}
+
+.hs-confirm__icon--info {
+  background: color-mix(in srgb, var(--hs-primary, #3182ce) 18%, transparent);
+  color: var(--hs-primary, #3182ce);
 }
 
 .hs-loader {

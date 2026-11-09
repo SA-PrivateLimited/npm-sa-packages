@@ -26,6 +26,13 @@ export interface ConfirmationModalProps {
   colors?: Partial<AppThemeColors>;
 }
 
+const TYPE_ICON: Record<ConfirmationModalType, string> = {
+  danger: 'delete',
+  warning: 'warning',
+  success: 'check-circle',
+  info: 'info',
+};
+
 const TYPE_GLYPH: Record<ConfirmationModalType, string> = {
   danger: '!',
   warning: '!',
@@ -81,7 +88,8 @@ export function ConfirmationModal({
           ? theme.success || '#34C759'
           : theme.primary;
 
-  const iconName = resolveIconName(iconGlyph);
+  const iconName =
+    resolveIconName(iconGlyph) || resolveIconName(TYPE_ICON[type]);
   const glyph = iconName ? null : iconGlyph || TYPE_GLYPH[type];
 
   return (
@@ -91,7 +99,16 @@ export function ConfirmationModal({
       animationType="fade"
       onRequestClose={onCancel}>
       <View style={styles.overlay}>
-        <View style={[styles.modalContainer, {backgroundColor: theme.card}]}>
+        <View
+          style={[
+            styles.modalContainer,
+            {
+              backgroundColor:
+                theme.background === '#0B1220' || theme.card === '#151E2E'
+                  ? '#151E2E'
+                  : '#FFFFFF',
+            },
+          ]}>
           <View style={styles.headerContainer}>
             <View
               style={[styles.iconContainer, {backgroundColor: `${accent}18`}]}>
@@ -164,7 +181,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 18,
     paddingBottom: 16,
-    elevation: 10,
+    elevation: 0,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.25,

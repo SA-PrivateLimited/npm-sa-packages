@@ -4,8 +4,8 @@ import type {AppThemeColors} from './theme';
 /** Customer web `global.css` :root + AppShell tabbar / main padding. */
 export const CUSTOMER_WEB = {
   background: '#F8FAFC',
-  /** Web `--crystal-bg` (near-solid glass; RN has no CSS backdrop-filter). */
-  card: 'rgba(255,255,255,0.82)',
+  /** Light sky glass over the landscape backdrop. */
+  card: 'rgba(226, 232, 240, 0.22)',
   text: '#1A202C',
   textSecondary: '#718096',
   primary: '#3182CE',
@@ -52,7 +52,8 @@ export const CUSTOMER_WEB = {
 /** Partner web `global.css` :root + AppShell tabbar. */
 export const PROVIDER_WEB = {
   background: '#F5F7FA',
-  card: 'rgba(255,255,255,0.82)',
+  /** Light sky glass over the landscape backdrop. */
+  card: 'rgba(226, 232, 240, 0.22)',
   text: '#1A202C',
   textSecondary: '#718096',
   primary: '#34C759',
@@ -62,7 +63,7 @@ export const PROVIDER_WEB = {
   error: '#FF3B30',
   success: '#34C759',
   warning: '#FF9500',
-  tabBar: 'rgba(255,255,255,0.92)',
+  tabBar: 'rgba(214, 236, 250, 0.94)',
   placeholder: '#A0AEC0',
   radius: 12,
   radiusSm: 8,

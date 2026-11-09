@@ -35,7 +35,16 @@ export function Modal({
       onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
         <Pressable
-          style={[styles.card, {backgroundColor: theme.card}, style]}
+          style={[
+            styles.card,
+            {
+              backgroundColor:
+                theme.background === '#0B1220' || theme.card === '#151E2E'
+                  ? '#151E2E'
+                  : '#FFFFFF',
+            },
+            style,
+          ]}
           onPress={e => e.stopPropagation()}>
           {children}
         </Pressable>

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {useAppTheme, type AppThemeColors} from './theme';
 import {HS, metricsFromTheme} from './tokens';
+import {surfaceLiftStyle} from './cssColor';
 
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 
@@ -44,15 +45,17 @@ export function Card({
   const theme = useAppTheme(colorsOverride);
   const metrics = metricsFromTheme(theme);
   const press = onPress || onClick;
+  const fill = theme.card || HS.surface;
   const box = [
     styles.card,
     {
-      backgroundColor: theme.card || HS.surface,
-      borderColor: bordered ? theme.border || HS.border : 'transparent',
+      backgroundColor: fill,
+      borderColor: bordered ? fill : 'transparent',
       borderWidth: bordered ? 1 : 0,
       borderRadius: metrics.radiusCard,
       padding: PAD[padding],
-      marginBottom: 12,
+      overflow: 'hidden' as const,
+      ...surfaceLiftStyle(fill),
     },
     style,
   ];
@@ -72,12 +75,7 @@ export function Card({
 
 const styles = StyleSheet.create({
   card: {
-    width: '100%',
+    alignSelf: 'stretch',
     borderRadius: HS.radiusCard,
-    shadowColor: '#1E3C5A',
-    shadowOpacity: 0.05,
-    shadowRadius: 16,
-    shadowOffset: {width: 0, height: 8},
-    elevation: 3,
   },
 });

@@ -1,8 +1,16 @@
 import type {CSSProperties, ReactNode} from 'react';
 import {Dialog} from './Modal.js';
 import {Button} from './Button.js';
+import {Icon} from './Icon.js';
 
 export type ConfirmDialogType = 'danger' | 'warning' | 'info' | 'success';
+
+const TYPE_ICON: Record<ConfirmDialogType, string> = {
+  danger: 'delete',
+  warning: 'warning',
+  success: 'check_circle',
+  info: 'info',
+};
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -37,7 +45,14 @@ export function ConfirmDialog({
     <Dialog
       open={open}
       onClose={onCancel}
-      title={title}
+      title={
+        <span className="hs-confirm__head">
+          <span className={`hs-confirm__icon hs-confirm__icon--${type}`}>
+            <Icon name={TYPE_ICON[type]} size={22} />
+          </span>
+          {title}
+        </span>
+      }
       showClose={false}
       className={`hs-confirm hs-confirm--${type} ${className}`.trim()}
       style={style}

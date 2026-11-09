@@ -8,7 +8,7 @@ import { useMobileSheet, useOverlayScrollLock } from './useMobileSheetOverlay.js
  * Custom single-select dropdown (no Ant Design).
  * Mobile: full-width bottom sheet. Desktop: anchored list.
  */
-export function Select({ label, options, value, onChange, placeholder = 'Select…', disabled = false, className = '', id, allowClear, showSearch = false, searchPlaceholder = 'Search…', emptyMessage = 'No options', clearAriaLabel = 'Clear', style, }) {
+export function Select({ label, options, value, onChange, placeholder = 'Select…', disabled = false, className = '', id, allowClear, showSearch = false, searchPlaceholder = 'Search…', emptyMessage = 'No options', allowCreate = false, createLabel = 'Use “{{query}}”', clearAriaLabel = 'Clear', style, }) {
     const autoId = useId();
     const selectId = id || autoId;
     const rootRef = useRef(null);
@@ -61,6 +61,13 @@ export function Select({ label, options, value, onChange, placeholder = 'Select�
             return haystack.includes(q);
         });
     }, [options, query]);
+    const createQuery = query.trim();
+    const canCreate = useMemo(() => {
+        if (!allowCreate || createQuery.length < 2)
+            return false;
+        const folded = createQuery.toLowerCase();
+        return !options.some((o) => o.value.toLowerCase() === folded || o.label.toLowerCase() === folded);
+    }, [allowCreate, createQuery, options]);
     const close = useCallback(() => {
         setOpen(false);
         setQuery('');
@@ -90,15 +97,18 @@ export function Select({ label, options, value, onChange, placeholder = 'Select�
     const renderOverlay = () => {
         if (!open)
             return null;
-        const sheet = (_jsxs(_Fragment, { children: [_jsx("div", { className: "hs-dd__backdrop", onClick: close, "aria-hidden": true }), _jsxs("div", { className: "hs-dd__panel", role: "listbox", "aria-labelledby": selectId, children: [_jsx("div", { className: "hs-dd__sheet-handle", "aria-hidden": true }), label || placeholder ? (_jsx("p", { className: "hs-dd__panel-title", children: label || placeholder })) : null, showSearch ? (_jsx("div", { className: "hs-dd__search", children: _jsx("input", { className: "hs-dd__search-input", value: query, onChange: (e) => setQuery(e.target.value), placeholder: searchPlaceholder, "aria-label": searchPlaceholder, autoFocus: true }) })) : null, _jsx("ul", { className: "hs-dd__list", children: filtered.length === 0 ? (_jsx("li", { className: "hs-dd__empty", children: emptyMessage })) : (filtered.map((opt) => {
-                                const active = opt.value === value;
-                                return (_jsx("li", { children: _jsxs("button", { type: "button", role: "option", "aria-selected": active, disabled: opt.disabled, className: `hs-dd__option${active ? ' is-active' : ''}`, onClick: () => {
-                                            if (opt.disabled)
-                                                return;
-                                            onChange(opt.value);
+        const sheet = (_jsxs(_Fragment, { children: [_jsx("div", { className: "hs-dd__backdrop", onClick: close, "aria-hidden": true }), _jsxs("div", { className: "hs-dd__panel", role: "listbox", "aria-labelledby": selectId, children: [_jsx("div", { className: "hs-dd__sheet-handle", "aria-hidden": true }), label || placeholder ? (_jsx("p", { className: "hs-dd__panel-title", children: label || placeholder })) : null, showSearch ? (_jsx("div", { className: "hs-dd__search", children: _jsx("input", { className: "hs-dd__search-input", value: query, onChange: (e) => setQuery(e.target.value), placeholder: searchPlaceholder, "aria-label": searchPlaceholder, autoFocus: true }) })) : null, _jsxs("ul", { className: "hs-dd__list", children: [canCreate ? (_jsx("li", { children: _jsx("button", { type: "button", role: "option", "aria-selected": value === createQuery, className: `hs-dd__option${value === createQuery ? ' is-active' : ''}`, onClick: () => {
+                                            onChange(createQuery);
                                             close();
-                                        }, children: [_jsx("span", { children: opt.label }), active ? (_jsx(Icon, { name: "check", size: 18, className: "hs-dd__check" })) : null] }) }, opt.value));
-                            })) })] })] }));
+                                        }, children: _jsx("span", { children: createLabel.replace(/\{\{\s*query\s*\}\}/gi, createQuery) }) }) })) : null, filtered.length === 0 && !canCreate ? (_jsx("li", { className: "hs-dd__empty", children: emptyMessage })) : (filtered.map((opt) => {
+                                    const active = opt.value === value;
+                                    return (_jsx("li", { children: _jsxs("button", { type: "button", role: "option", "aria-selected": active, disabled: opt.disabled, className: `hs-dd__option${active ? ' is-active' : ''}`, onClick: () => {
+                                                if (opt.disabled)
+                                                    return;
+                                                onChange(opt.value);
+                                                close();
+                                            }, children: [_jsx("span", { children: opt.label }), active ? (_jsx(Icon, { name: "check", size: 18, className: "hs-dd__check" })) : null] }) }, opt.value));
+                                }))] })] })] }));
         if (isMobileSheet) {
             return createPortal(_jsx("div", { ref: overlayRef, className: "hs-dd__mobile-overlay", children: sheet }), document.body);
         }
@@ -112,7 +122,9 @@ export function Select({ label, options, value, onChange, placeholder = 'Select�
             setOpen(true);
         }
     };
-    return (_jsx(FieldWrap, { label: label, htmlFor: selectId, className: className, children: _jsxs("div", { ref: rootRef, className: `hs-dd${open ? ' is-open' : ''}${disabled ? ' is-disabled' : ''}`, style: style, children: [_jsxs("button", { type: "button", id: selectId, className: "hs-dd__trigger", disabled: disabled, "aria-haspopup": "listbox", "aria-expanded": open, onClick: () => !disabled && setOpen((v) => !v), onKeyDown: onTriggerKey, children: [_jsx("span", { className: selected ? 'hs-dd__value' : 'hs-dd__value hs-dd__placeholder', children: selected?.label || placeholder }), _jsxs("span", { className: "hs-dd__actions", children: [canClear && value ? (_jsx("span", { className: "hs-dd__clear", role: "button", tabIndex: -1, "aria-label": clearAriaLabel, onClick: (e) => {
+    return (_jsx(FieldWrap, { label: label, htmlFor: selectId, className: className, children: _jsxs("div", { ref: rootRef, className: `hs-dd${open ? ' is-open' : ''}${disabled ? ' is-disabled' : ''}`, style: style, children: [_jsxs("button", { type: "button", id: selectId, className: "hs-dd__trigger", disabled: disabled, "aria-haspopup": "listbox", "aria-expanded": open, onClick: () => !disabled && setOpen((v) => !v), onKeyDown: onTriggerKey, children: [_jsx("span", { className: selected || value
+                                ? 'hs-dd__value'
+                                : 'hs-dd__value hs-dd__placeholder', children: selected?.label || value || placeholder }), _jsxs("span", { className: "hs-dd__actions", children: [canClear && value ? (_jsx("span", { className: "hs-dd__clear", role: "button", tabIndex: -1, "aria-label": clearAriaLabel, onClick: (e) => {
                                         e.stopPropagation();
                                         onChange('');
                                         close();
